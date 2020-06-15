@@ -1,32 +1,30 @@
-import React, { useState } from "react";
+import React, { useState } from "react"
 import {
   Modal,
   Button,
   Container,
   Header,
   Loader,
-  List,
   Icon,
-  Grid,
-} from "semantic-ui-react";
-import ProjectModal from "./project-modal";
-import {
-  useAllProjectsDetailsQuery,
-} from "./types/operations";
-import UserWithIcon from "./user";
+  Menu,
+  Table,
+} from "semantic-ui-react"
+import ProjectModal from "./project-modal"
+import { useAllProjectsDetailsQuery } from "./types/operations"
+import UserWithIcon from "./user"
 
 export interface ProjectProps {
-  withProjectEdits: boolean;
+  withProjectEdits: boolean
 }
 
 function Projects(props: ProjectProps) {
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false)
   const openModal = () => {
-    setModalVisible(true);
-  };
+    setModalVisible(true)
+  }
   const closeModal = () => {
-    setModalVisible(false);
-  };
+    setModalVisible(false)
+  }
 
   return (
     <Container text style={{ marginTop: "10em" }}>
@@ -40,51 +38,55 @@ function Projects(props: ProjectProps) {
         </Modal>
       )}
 
-      <Grid container={true}>
-        <Grid.Row stretched>
-          <Grid.Column floated="left">
-            <Header as="h1">Projects</Header>
-          </Grid.Column>
-          <Grid.Column floated="right">
-            {props.withProjectEdits && (
-              <Button onClick={openModal}>
-                <Icon name="plus" />
-                New Project
-              </Button>
-            )}
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
+      <Menu pointing secondary>
+        <Menu.Item header>Projects</Menu.Item>
+        <Menu.Menu position="right">
+          {props.withProjectEdits && (
+            <Menu.Item onClick={openModal}>
+              <Icon name="plus" />
+              New Project
+            </Menu.Item>
+          )}
+        </Menu.Menu>
+      </Menu>
 
       {ProjectList(props.withProjectEdits)}
     </Container>
-  );
-};
+  )
+}
 
 function ProjectList(withProjectEdits: boolean) {
-  const { loading, error, data } = useAllProjectsDetailsQuery();
+  const { loading, error, data } = useAllProjectsDetailsQuery()
 
-  if (loading) return <Loader />;
-  if (error) return `Error! ${error.message}`;
+  if (loading) return <Loader />
+  if (error) return `Error! ${error.message}`
 
   const items = data?.queryProject?.map((proj) => {
-    let icon: "github" | "gitlab" | "microsoft" | "google" | "react" = "github";
+    let icon: "github" | "gitlab" | "microsoft" | "google" | "react" = "github"
     if (proj?.url?.includes("gitlab")) {
-      icon = "gitlab";
+      icon = "gitlab"
     } else if (proj?.url?.includes("microsoft")) {
-      icon = "microsoft";
+      icon = "microsoft"
     } else if (proj?.url?.includes("google")) {
-      icon = "google";
+      icon = "google"
     } else if (proj?.url?.includes("react")) {
-      icon = "react";
+      icon = "react"
     }
-
     return (
-      <List.Item>
-        <List.Icon name={icon} size="large" verticalAlign="middle" />
-        <List.Content>
-          <List.Header as="a">{proj?.name}</List.Header>
-          {proj?.description} Admin: {proj?.admin && UserWithIcon(proj?.admin)}
+      <Table.Row>
+        <Table.Cell>
+          <Header as="h4" image>
+            <a href={proj?.url ?? ""} target="__blank" style={{color: "black"}}>
+              <Icon name={icon} size="large" verticalAlign="middle" />
+            </a>
+            <Header.Content>
+              {proj?.name}
+              <Header.Subheader>{proj?.description}</Header.Subheader>
+            </Header.Content>
+          </Header>
+        </Table.Cell>
+        <Table.Cell>{proj?.admin && UserWithIcon(proj?.admin)}</Table.Cell>
+        <Table.Cell>
           {withProjectEdits && (
             <Modal
               trigger={
@@ -97,16 +99,16 @@ function ProjectList(withProjectEdits: boolean) {
               <ProjectModal projID={proj?.projID} />
             </Modal>
           )}
-        </List.Content>
-      </List.Item>
-    );
-  });
+        </Table.Cell>
+      </Table.Row>
+    )
+  })
 
   return (
-    <List divided relaxed>
-      {items}
-    </List>
-  );
-};
+    <Table basic="very">
+      <Table.Body>{items}</Table.Body>
+    </Table>
+  )
+}
 
-export default Projects;
+export default Projects
