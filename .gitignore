@@ -1,6 +1,4 @@
 # Generated files
-src/types/graphql.ts
-operations.ts
 graphql.schema.json
 
 # dependencies
