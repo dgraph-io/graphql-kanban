@@ -11,6 +11,13 @@ Soon to come:
 - [ ] Slash GraphQL backend
 - [ ] Board view
  
+# Running
+
+```sh
+yarn install
+yarn run
+```
+
 # Starting an app like this
 
 Basic set up of the app
