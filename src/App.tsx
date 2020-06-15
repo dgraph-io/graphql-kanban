@@ -1,26 +1,30 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import { User } from './types/graphql';
+import { ApolloClient, InMemoryCache, HttpLink, ApolloProvider } from '@apollo/client';
+import HomePage from './components/home';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+// FIXME: built from JWT info?
+const currentUser: User = {
+  username: "Michael",
+  isAdmin: true
 }
 
-export default App;
+const createApolloClient = () => 
+  new ApolloClient({
+    cache: new InMemoryCache(),
+    link: new HttpLink({
+      uri: "http://localhost:8180/graphql"
+    })
+  })
+
+
+const App = () => {
+  const client = createApolloClient()
+  return (
+    <ApolloProvider client={client}>
+      <HomePage user={currentUser}/>
+    </ApolloProvider>
+  )
+}
+export default App

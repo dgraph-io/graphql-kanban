@@ -1,0 +1,62 @@
+
+# Header
+
+query projectNames {
+  queryProject {
+    projID
+    name
+  }
+}
+
+# Projects
+
+fragment projectDetails on Project {
+  projID
+  name
+  description
+  url
+  admin {
+    username
+    displayName
+  }
+}
+
+query allProjectsDetails {
+  queryProject {
+    ...projectDetails
+  }
+}
+
+# project-modal
+
+query getProjectDetails($projID: ID!) {
+  getProject(projID: $projID) {
+    ...projectDetails
+  }
+}
+
+query allUsers {
+  queryUser(order: { desc: displayName }) {
+    username
+    displayName
+  }
+}
+
+mutation addProject($proj: AddProjectInput!) {
+  addProject(input: [$proj]) {
+    project {
+      ...projectDetails
+    }
+  }
+}
+
+mutation updateProjectDetails($id: ID!, $details: ProjectPatch) {
+  updateProject(input: {
+    filter: { projID: [$id] },
+    set: $details
+  }) {
+    project {
+      ...projectDetails
+    }
+  }
+}

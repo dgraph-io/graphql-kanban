@@ -1,0 +1,43 @@
+type User {
+  username: String! @id
+  displayName: String
+  isAdmin: Boolean
+  tickets: [Ticket] @hasInverse(field: assignedTo)
+}
+
+type Project {
+  projID: ID!
+  name: String! @search(by: [term])
+  url: String
+  description: String
+  admin: User
+  roles: [Role]
+  columns: [Column] @hasInverse(field: inProject)
+}
+
+type Role {
+  id: ID!
+  permission: [Permission] @search
+  assignedTo: [User]
+}
+
+enum Permission {
+  VIEW
+  EDIT
+}
+
+type Column {
+  colID: ID!
+  inProject: Project!
+  name: String!
+  orderPreference: Int!
+  tickets: [Ticket] @hasInverse(field: onColumn)
+}
+
+type Ticket {
+  id: ID!
+  onColumn: Column!
+  title: String! @search(by: [term])
+  description: String!
+  assignedTo: [User!]
+}

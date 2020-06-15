@@ -1,0 +1,19 @@
+mutation addProjects($projects: [AddProjectInput!]!) {
+  addProject(input: $projects) {
+    project {
+      projID
+      name
+    }
+    numUids
+  }
+}
+
+mutation addUsers($users: [AddUserInput!]!) {
+  addUser(input: $users) {
+    user {
+      username
+      displayName
+    }
+    numUids
+  }
+}
