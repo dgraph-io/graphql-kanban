@@ -14,7 +14,7 @@ const createApolloClient = () =>
   new ApolloClient({
     cache: new InMemoryCache(),
     link: new HttpLink({
-      uri: "http://localhost:8180/graphql"
+      uri: process.env.REACT_APP_DGRAPH_BACKEND
     })
   })
 
