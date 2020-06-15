@@ -2,7 +2,13 @@ Project management kanban board app built with Dgraph GraphQL.
 
 *Currently in early stages development*
 
-Tech stack is just Dgraph on the backend and Apollo client v3.0 (React) + [GraphQL Code Generator](https://graphql-code-generator.com/) + semantic-ui-react.
+Tech stack:
+* Backend:
+  * [Dgraph GraphQL](https://dgraph.io/graphql)
+* Frontend
+  * [Apollo client v3.0 (React)](https://www.apollographql.com/docs/)
+  * [GraphQL Code Generator](https://graphql-code-generator.com/) 
+  * [semantic-ui-react](https://react.semantic-ui.com/)
 
 Soon to come:
 
