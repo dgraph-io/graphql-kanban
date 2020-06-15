@@ -1,44 +1,77 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Project management kanban board app built with Dgraph GraphQL.  
 
-## Available Scripts
+*Currently in early stages development*
 
-In the project directory, you can run:
+Tech stack is just Dgraph on the backend and Apollo client v3.0 (React) + [GraphQL Code Generator](https://graphql-code-generator.com/) + semantic-ui-react.
 
-### `yarn start`
+Soon to come:
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- [ ] Auth0 login
+- [ ] Netify deploments
+- [ ] Slash GraphQL backend
+- [ ] Board view
+ 
+# Starting an app like this
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+Basic set up of the app
 
-### `yarn test`
+```sh
+npx create-react-app graphql-kanban --template typescript
+cd graphql-kanban
+npm install graphql @apollo/client react-router-dom semantic-ui-react semantic-ui-css
+yarn add -D @graphql-codegen/cli @graphql-codegen/typescript @graphql-codegen/typescript-operations @graphql-codegen/typescript-react-apollo @graphql-codegen/add @graphql-codegen/near-operation-file-preset
+yarn install
+```
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+I also added `cross-fetch` and `ts-node` for the code that loads the initial data 
 
-### `yarn build`
+```
+yarn add cross-fetch
+yarn add -D ts-node
+```
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+It's not necessary for the frontend app.
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+Once you've got a schema you can load that into Dgraph with 
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```
+curl -X POST localhost:8180/admin/schema --data-binary '@schema.graphql'
+```
 
-### `yarn eject`
+Then GraphQL Code Generator will generate types, hooks, etc. for your project
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```
+yarn graphql-codegen init
+...answer questions...
+yarn install
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Set up scripts in package.json
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```
+"scripts": {
+    ...
+    "generate-types": "graphql-codegen --config codegen.yml",
+    "sample-data": "ts-node -O '{\"module\": \"commonjs\"}' src/data/initial.ts"
+    ...
+}
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Then you can run
 
-## Learn More
+```
+yarn run generate-types
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+anytime your types change or you add a new query/mutation to the app and GraphQL Code Generator will regenerate.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+
+Init the whole project with
+
+```
+yarn run sample-data
+```
+
+FIXME / TODO (some project wide things to change) : 
+- get an icon/image set for new projects, add user, etc
+  (or use only from https://img.icons8.com and acknowledge in the app footer )
