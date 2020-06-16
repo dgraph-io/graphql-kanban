@@ -1,8 +1,8 @@
-import { User } from "../types/graphql";
+import { User } from "../../types/graphql";
 import { Image } from "semantic-ui-react";
 import React from "react";
 
-function UserWithIcon(user: User) {
+export function UserWithIcon(user: User) {
 
   // FIXME: We can get the user icons as their git image.
   // It's url is in the json of the github user resource.
@@ -14,5 +14,3 @@ function UserWithIcon(user: User) {
     <span>{user.displayName ?? user.username}</span>
   </span>)
 }
-
-export default UserWithIcon

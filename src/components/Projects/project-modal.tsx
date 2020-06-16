@@ -1,12 +1,11 @@
 import React, { Fragment, useState } from "react"
 import { Header, Image, Modal, Form } from "semantic-ui-react"
-import { Project } from "../types/graphql"
+import { Project } from "../../types/graphql"
 
 import {
   useAllUsersQuery,
   useGetProjectDetailsQuery,
   useAddProjectMutation,
-  ProjectNamesDocument,
   useUpdateProjectDetailsMutation,
   AllProjectsDetailsQuery,
   AllProjectsDetailsQueryVariables,
@@ -19,7 +18,6 @@ export interface ProjectModalProps {
 }
 
 function useFormButton(project: Partial<Project>, closeModal: () => void) {
-
   // FIXME: need to also update the cache for the header project dropdown component
 
   const [addProjectMutation] = useAddProjectMutation({
@@ -27,7 +25,7 @@ function useFormButton(project: Partial<Project>, closeModal: () => void) {
       const projs = cache.readQuery<
         AllProjectsDetailsQuery,
         AllProjectsDetailsQueryVariables
-      >({ query: ProjectNamesDocument })
+      >({ query: AllProjectsDetailsDocument })
       if (!projs?.queryProject || !data?.addProject?.project) {
         return
       }
@@ -47,7 +45,7 @@ function useFormButton(project: Partial<Project>, closeModal: () => void) {
       const projs = cache.readQuery<
         AllProjectsDetailsQuery,
         AllProjectsDetailsQueryVariables
-      >({ query: ProjectNamesDocument })
+      >({ query: AllProjectsDetailsDocument })
       if (!projs?.queryProject || !projs || !data?.updateProject?.project) {
         return
       }
