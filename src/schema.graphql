@@ -39,5 +39,6 @@ type Ticket {
   onColumn: Column!
   title: String! @search(by: [term])
   description: String!
+  orderPreference: Int!
   assignedTo: [User!]
 }

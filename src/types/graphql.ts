@@ -9,10 +9,77 @@ export type Scalars = {
   DateTime: any;
 };
 
-export type UpdateTicketInput = {
-  filter: TicketFilter;
-  set?: Maybe<TicketPatch>;
-  remove?: Maybe<TicketPatch>;
+export type User = {
+  __typename?: 'User';
+  username: Scalars['String'];
+  displayName?: Maybe<Scalars['String']>;
+  isAdmin?: Maybe<Scalars['Boolean']>;
+  tickets?: Maybe<Array<Maybe<Ticket>>>;
+};
+
+
+export type UserTicketsArgs = {
+  filter?: Maybe<TicketFilter>;
+  order?: Maybe<TicketOrder>;
+  first?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+};
+
+export type Project = {
+  __typename?: 'Project';
+  projID: Scalars['ID'];
+  name: Scalars['String'];
+  url?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  admin?: Maybe<User>;
+  roles?: Maybe<Array<Maybe<Role>>>;
+  columns?: Maybe<Array<Maybe<Column>>>;
+};
+
+
+export type ProjectAdminArgs = {
+  filter?: Maybe<UserFilter>;
+};
+
+
+export type ProjectRolesArgs = {
+  filter?: Maybe<RoleFilter>;
+  first?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+};
+
+
+export type ProjectColumnsArgs = {
+  filter?: Maybe<ColumnFilter>;
+  order?: Maybe<ColumnOrder>;
+  first?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+};
+
+export type DeleteColumnPayload = {
+  __typename?: 'DeleteColumnPayload';
+  msg?: Maybe<Scalars['String']>;
+  numUids?: Maybe<Scalars['Int']>;
+};
+
+export type AddColumnInput = {
+  inProject: ProjectRef;
+  name: Scalars['String'];
+  orderPreference: Scalars['Int'];
+  tickets?: Maybe<Array<Maybe<TicketRef>>>;
+};
+
+export type ProjectOrder = {
+  asc?: Maybe<ProjectOrderable>;
+  desc?: Maybe<ProjectOrderable>;
+  then?: Maybe<ProjectOrder>;
+};
+
+export type UserFilter = {
+  username?: Maybe<StringHashFilter>;
+  and?: Maybe<UserFilter>;
+  or?: Maybe<UserFilter>;
+  not?: Maybe<UserFilter>;
 };
 
 export type Ticket = {
@@ -44,25 +111,10 @@ export type AuthRule = {
   rule?: Maybe<Scalars['String']>;
 };
 
-export type TicketPatch = {
-  onColumn?: Maybe<ColumnRef>;
-  title?: Maybe<Scalars['String']>;
-  description?: Maybe<Scalars['String']>;
-  assignedTo?: Maybe<Array<UserRef>>;
-};
-
-export type TicketRef = {
-  id?: Maybe<Scalars['ID']>;
-  onColumn?: Maybe<ColumnRef>;
-  title?: Maybe<Scalars['String']>;
-  description?: Maybe<Scalars['String']>;
-  assignedTo?: Maybe<Array<UserRef>>;
-};
-
-export type UpdateProjectInput = {
-  filter: ProjectFilter;
-  set?: Maybe<ProjectPatch>;
-  remove?: Maybe<ProjectPatch>;
+export type UpdateTicketInput = {
+  filter: TicketFilter;
+  set?: Maybe<TicketPatch>;
+  remove?: Maybe<TicketPatch>;
 };
 
 export type AddColumnPayload = {
@@ -87,25 +139,25 @@ export type RoleFilter = {
   not?: Maybe<RoleFilter>;
 };
 
-export type ColumnOrder = {
-  asc?: Maybe<ColumnOrderable>;
-  desc?: Maybe<ColumnOrderable>;
-  then?: Maybe<ColumnOrder>;
-};
-
-export type ProjectPatch = {
-  name?: Maybe<Scalars['String']>;
-  url?: Maybe<Scalars['String']>;
+export type TicketPatch = {
+  onColumn?: Maybe<ColumnRef>;
+  title?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
-  admin?: Maybe<UserRef>;
-  roles?: Maybe<Array<Maybe<RoleRef>>>;
-  columns?: Maybe<Array<Maybe<ColumnRef>>>;
+  assignedTo?: Maybe<Array<UserRef>>;
 };
 
-export type UpdateColumnInput = {
-  filter: ColumnFilter;
-  set?: Maybe<ColumnPatch>;
-  remove?: Maybe<ColumnPatch>;
+export type TicketRef = {
+  id?: Maybe<Scalars['ID']>;
+  onColumn?: Maybe<ColumnRef>;
+  title?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  assignedTo?: Maybe<Array<UserRef>>;
+};
+
+export type UpdateProjectInput = {
+  filter: ProjectFilter;
+  set?: Maybe<ProjectPatch>;
+  remove?: Maybe<ProjectPatch>;
 };
 
 export enum HttpMethod {
@@ -132,6 +184,27 @@ export type AddRolePayloadRoleArgs = {
 export type ColumnFilter = {
   colID?: Maybe<Array<Scalars['ID']>>;
   not?: Maybe<ColumnFilter>;
+};
+
+export type ColumnOrder = {
+  asc?: Maybe<ColumnOrderable>;
+  desc?: Maybe<ColumnOrderable>;
+  then?: Maybe<ColumnOrder>;
+};
+
+export type ProjectPatch = {
+  name?: Maybe<Scalars['String']>;
+  url?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  admin?: Maybe<UserRef>;
+  roles?: Maybe<Array<Maybe<RoleRef>>>;
+  columns?: Maybe<Array<Maybe<ColumnRef>>>;
+};
+
+export type UpdateColumnInput = {
+  filter: ColumnFilter;
+  set?: Maybe<ColumnPatch>;
+  remove?: Maybe<ColumnPatch>;
 };
 
 export type StringRegExpFilter = {
@@ -216,6 +289,17 @@ export type QueryQueryTicketArgs = {
   offset?: Maybe<Scalars['Int']>;
 };
 
+export enum Permission {
+  View = 'VIEW',
+  Edit = 'EDIT'
+}
+
+
+export type StringFullTextFilter = {
+  alloftext?: Maybe<Scalars['String']>;
+  anyoftext?: Maybe<Scalars['String']>;
+};
+
 export type DeleteUserPayload = {
   __typename?: 'DeleteUserPayload';
   msg?: Maybe<Scalars['String']>;
@@ -234,31 +318,6 @@ export type UpdateProjectPayloadProjectArgs = {
   order?: Maybe<ProjectOrder>;
   first?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
-};
-
-export enum Permission {
-  View = 'VIEW',
-  Edit = 'EDIT'
-}
-
-
-export type StringFullTextFilter = {
-  alloftext?: Maybe<Scalars['String']>;
-  anyoftext?: Maybe<Scalars['String']>;
-};
-
-export type RoleRef = {
-  id?: Maybe<Scalars['ID']>;
-  permission?: Maybe<Array<Maybe<Permission>>>;
-  assignedTo?: Maybe<Array<Maybe<UserRef>>>;
-};
-
-export type TicketFilter = {
-  id?: Maybe<Array<Scalars['ID']>>;
-  title?: Maybe<StringTermFilter>;
-  and?: Maybe<TicketFilter>;
-  or?: Maybe<TicketFilter>;
-  not?: Maybe<TicketFilter>;
 };
 
 export type StringExactFilter = {
@@ -289,11 +348,18 @@ export type UpdateColumnPayloadColumnArgs = {
   offset?: Maybe<Scalars['Int']>;
 };
 
-export type UserRef = {
-  username?: Maybe<Scalars['String']>;
-  displayName?: Maybe<Scalars['String']>;
-  isAdmin?: Maybe<Scalars['Boolean']>;
-  tickets?: Maybe<Array<Maybe<TicketRef>>>;
+export type RoleRef = {
+  id?: Maybe<Scalars['ID']>;
+  permission?: Maybe<Array<Maybe<Permission>>>;
+  assignedTo?: Maybe<Array<Maybe<UserRef>>>;
+};
+
+export type TicketFilter = {
+  id?: Maybe<Array<Scalars['ID']>>;
+  title?: Maybe<StringTermFilter>;
+  and?: Maybe<TicketFilter>;
+  or?: Maybe<TicketFilter>;
+  not?: Maybe<TicketFilter>;
 };
 
 export type StringHashFilter = {
@@ -317,10 +383,12 @@ export type ProjectRef = {
   columns?: Maybe<Array<Maybe<ColumnRef>>>;
 };
 
-export enum ColumnOrderable {
-  Name = 'name',
-  OrderPreference = 'orderPreference'
-}
+export type UserRef = {
+  username?: Maybe<Scalars['String']>;
+  displayName?: Maybe<Scalars['String']>;
+  isAdmin?: Maybe<Scalars['Boolean']>;
+  tickets?: Maybe<Array<Maybe<TicketRef>>>;
+};
 
 export enum DgraphIndex {
   Int = 'int',
@@ -337,6 +405,32 @@ export enum DgraphIndex {
   Day = 'day',
   Hour = 'hour'
 }
+
+export enum ColumnOrderable {
+  Name = 'name',
+  OrderPreference = 'orderPreference'
+}
+
+export enum Mode {
+  Batch = 'BATCH',
+  Single = 'SINGLE'
+}
+
+export type FloatFilter = {
+  eq?: Maybe<Scalars['Float']>;
+  le?: Maybe<Scalars['Float']>;
+  lt?: Maybe<Scalars['Float']>;
+  ge?: Maybe<Scalars['Float']>;
+  gt?: Maybe<Scalars['Float']>;
+};
+
+export type DateTimeFilter = {
+  eq?: Maybe<Scalars['DateTime']>;
+  le?: Maybe<Scalars['DateTime']>;
+  lt?: Maybe<Scalars['DateTime']>;
+  ge?: Maybe<Scalars['DateTime']>;
+  gt?: Maybe<Scalars['DateTime']>;
+};
 
 export type DeleteProjectPayload = {
   __typename?: 'DeleteProjectPayload';
@@ -360,27 +454,6 @@ export type UserOrder = {
   then?: Maybe<UserOrder>;
 };
 
-export enum Mode {
-  Batch = 'BATCH',
-  Single = 'SINGLE'
-}
-
-export type FloatFilter = {
-  eq?: Maybe<Scalars['Float']>;
-  le?: Maybe<Scalars['Float']>;
-  lt?: Maybe<Scalars['Float']>;
-  ge?: Maybe<Scalars['Float']>;
-  gt?: Maybe<Scalars['Float']>;
-};
-
-export type DateTimeFilter = {
-  eq?: Maybe<Scalars['DateTime']>;
-  le?: Maybe<Scalars['DateTime']>;
-  lt?: Maybe<Scalars['DateTime']>;
-  ge?: Maybe<Scalars['DateTime']>;
-  gt?: Maybe<Scalars['DateTime']>;
-};
-
 export type IntFilter = {
   eq?: Maybe<Scalars['Int']>;
   le?: Maybe<Scalars['Int']>;
@@ -398,12 +471,6 @@ export type UserPatch = {
   displayName?: Maybe<Scalars['String']>;
   isAdmin?: Maybe<Scalars['Boolean']>;
   tickets?: Maybe<Array<Maybe<TicketRef>>>;
-};
-
-export type UpdateRoleInput = {
-  filter: RoleFilter;
-  set?: Maybe<RolePatch>;
-  remove?: Maybe<RolePatch>;
 };
 
 export type AddTicketPayload = {
@@ -437,6 +504,25 @@ export type UpdateUserPayloadUserArgs = {
 export type AddRoleInput = {
   permission?: Maybe<Array<Maybe<Permission>>>;
   assignedTo?: Maybe<Array<Maybe<UserRef>>>;
+};
+
+export type UpdateRoleInput = {
+  filter: RoleFilter;
+  set?: Maybe<RolePatch>;
+  remove?: Maybe<RolePatch>;
+};
+
+export type UpdateRolePayload = {
+  __typename?: 'UpdateRolePayload';
+  role?: Maybe<Array<Maybe<Role>>>;
+  numUids?: Maybe<Scalars['Int']>;
+};
+
+
+export type UpdateRolePayloadRoleArgs = {
+  filter?: Maybe<RoleFilter>;
+  first?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
 };
 
 export type AddUserInput = {
@@ -540,34 +626,6 @@ export type MutationDeleteTicketArgs = {
   filter: TicketFilter;
 };
 
-export type UpdateRolePayload = {
-  __typename?: 'UpdateRolePayload';
-  role?: Maybe<Array<Maybe<Role>>>;
-  numUids?: Maybe<Scalars['Int']>;
-};
-
-
-export type UpdateRolePayloadRoleArgs = {
-  filter?: Maybe<RoleFilter>;
-  first?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-};
-
-export type AddProjectInput = {
-  name: Scalars['String'];
-  url?: Maybe<Scalars['String']>;
-  description?: Maybe<Scalars['String']>;
-  admin?: Maybe<UserRef>;
-  roles?: Maybe<Array<Maybe<RoleRef>>>;
-  columns?: Maybe<Array<Maybe<ColumnRef>>>;
-};
-
-export type UpdateUserInput = {
-  filter: UserFilter;
-  set?: Maybe<UserPatch>;
-  remove?: Maybe<UserPatch>;
-};
-
 export type Role = {
   __typename?: 'Role';
   id: Scalars['ID'];
@@ -608,6 +666,43 @@ export type UpdateTicketPayloadTicketArgs = {
   offset?: Maybe<Scalars['Int']>;
 };
 
+export type AddProjectInput = {
+  name: Scalars['String'];
+  url?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  admin?: Maybe<UserRef>;
+  roles?: Maybe<Array<Maybe<RoleRef>>>;
+  columns?: Maybe<Array<Maybe<ColumnRef>>>;
+};
+
+export type UpdateUserInput = {
+  filter: UserFilter;
+  set?: Maybe<UserPatch>;
+  remove?: Maybe<UserPatch>;
+};
+
+export type Column = {
+  __typename?: 'Column';
+  colID: Scalars['ID'];
+  inProject: Project;
+  name: Scalars['String'];
+  orderPreference: Scalars['Int'];
+  tickets?: Maybe<Array<Maybe<Ticket>>>;
+};
+
+
+export type ColumnInProjectArgs = {
+  filter?: Maybe<ProjectFilter>;
+};
+
+
+export type ColumnTicketsArgs = {
+  filter?: Maybe<TicketFilter>;
+  order?: Maybe<TicketOrder>;
+  first?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+};
+
 export type CustomHttp = {
   url: Scalars['String'];
   method: HttpMethod;
@@ -642,27 +737,25 @@ export type Permission_Hash = {
   eq?: Maybe<Array<Maybe<Permission>>>;
 };
 
-export type Column = {
-  __typename?: 'Column';
-  colID: Scalars['ID'];
-  inProject: Project;
-  name: Scalars['String'];
-  orderPreference: Scalars['Int'];
-  tickets?: Maybe<Array<Maybe<Ticket>>>;
+export type AddProjectPayload = {
+  __typename?: 'AddProjectPayload';
+  project?: Maybe<Array<Maybe<Project>>>;
+  numUids?: Maybe<Scalars['Int']>;
 };
 
 
-export type ColumnInProjectArgs = {
+export type AddProjectPayloadProjectArgs = {
   filter?: Maybe<ProjectFilter>;
-};
-
-
-export type ColumnTicketsArgs = {
-  filter?: Maybe<TicketFilter>;
-  order?: Maybe<TicketOrder>;
+  order?: Maybe<ProjectOrder>;
   first?: Maybe<Scalars['Int']>;
   offset?: Maybe<Scalars['Int']>;
 };
+
+export enum ProjectOrderable {
+  Name = 'name',
+  Url = 'url',
+  Description = 'description'
+}
 
 export type ColumnPatch = {
   inProject?: Maybe<ProjectRef>;
@@ -691,97 +784,4 @@ export type TicketOrder = {
   asc?: Maybe<TicketOrderable>;
   desc?: Maybe<TicketOrderable>;
   then?: Maybe<TicketOrder>;
-};
-
-export type AddProjectPayload = {
-  __typename?: 'AddProjectPayload';
-  project?: Maybe<Array<Maybe<Project>>>;
-  numUids?: Maybe<Scalars['Int']>;
-};
-
-
-export type AddProjectPayloadProjectArgs = {
-  filter?: Maybe<ProjectFilter>;
-  order?: Maybe<ProjectOrder>;
-  first?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-};
-
-export enum ProjectOrderable {
-  Name = 'name',
-  Url = 'url',
-  Description = 'description'
-}
-
-export type User = {
-  __typename?: 'User';
-  username: Scalars['String'];
-  displayName?: Maybe<Scalars['String']>;
-  isAdmin?: Maybe<Scalars['Boolean']>;
-  tickets?: Maybe<Array<Maybe<Ticket>>>;
-};
-
-
-export type UserTicketsArgs = {
-  filter?: Maybe<TicketFilter>;
-  order?: Maybe<TicketOrder>;
-  first?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-};
-
-export type Project = {
-  __typename?: 'Project';
-  projID: Scalars['ID'];
-  name: Scalars['String'];
-  url?: Maybe<Scalars['String']>;
-  description?: Maybe<Scalars['String']>;
-  admin?: Maybe<User>;
-  roles?: Maybe<Array<Maybe<Role>>>;
-  columns?: Maybe<Array<Maybe<Column>>>;
-};
-
-
-export type ProjectAdminArgs = {
-  filter?: Maybe<UserFilter>;
-};
-
-
-export type ProjectRolesArgs = {
-  filter?: Maybe<RoleFilter>;
-  first?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-};
-
-
-export type ProjectColumnsArgs = {
-  filter?: Maybe<ColumnFilter>;
-  order?: Maybe<ColumnOrder>;
-  first?: Maybe<Scalars['Int']>;
-  offset?: Maybe<Scalars['Int']>;
-};
-
-export type DeleteColumnPayload = {
-  __typename?: 'DeleteColumnPayload';
-  msg?: Maybe<Scalars['String']>;
-  numUids?: Maybe<Scalars['Int']>;
-};
-
-export type AddColumnInput = {
-  inProject: ProjectRef;
-  name: Scalars['String'];
-  orderPreference: Scalars['Int'];
-  tickets?: Maybe<Array<Maybe<TicketRef>>>;
-};
-
-export type ProjectOrder = {
-  asc?: Maybe<ProjectOrderable>;
-  desc?: Maybe<ProjectOrderable>;
-  then?: Maybe<ProjectOrder>;
-};
-
-export type UserFilter = {
-  username?: Maybe<StringHashFilter>;
-  and?: Maybe<UserFilter>;
-  or?: Maybe<UserFilter>;
-  not?: Maybe<UserFilter>;
 };

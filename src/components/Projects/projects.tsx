@@ -12,6 +12,7 @@ import {
 import ProjectModal from "./project-modal"
 import { useAllProjectsDetailsQuery } from "./types/operations"
 import { UserWithIcon } from "../User/user"
+import { Link } from "react-router-dom"
 
 export interface ProjectProps {
   withProjectEdits: boolean
@@ -83,7 +84,11 @@ function ProjectList(withProjectEdits: boolean) {
             >
               <Icon name={icon} size="large" verticalAlign="middle" />
             </a>
-            <Header.Content>
+            <Header.Content
+              as={Link}
+              to={"/project/" + proj?.projID}
+              style={{ color: "black" }}
+            >
               {proj?.name}
               <Header.Subheader>{proj?.description}</Header.Subheader>
             </Header.Content>

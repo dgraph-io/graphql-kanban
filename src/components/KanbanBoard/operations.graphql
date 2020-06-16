@@ -1,0 +1,114 @@
+fragment projectName on Project {
+  projID
+  name
+}
+
+fragment columnDetails on Column {
+  colID
+  name
+}
+
+fragment userNames on User {
+  username
+  displayName
+}
+
+fragment ticketDetails on Ticket {
+  id
+  title
+  description
+  assignedTo {
+    ...userNames
+  }
+}
+
+fragment ticketWithColumn on Ticket {
+  ...ticketDetails
+  onColumn {
+    ...columnDetails
+  }
+}
+
+# -----
+# Query
+# -----
+
+query getProject($projectID: ID!) {
+  getProject(projID: $projectID) {
+    ...projectName
+    columns {
+      ...columnDetails
+      tickets {
+        ...ticketDetails
+      }
+    }
+  }
+}
+
+query getTicket($ticketID: ID!) {
+  getTicket(id: $ticketID) {
+    ...ticketWithColumn
+  }
+}
+
+# query getProject($projectID: ID!) {
+#   getProject(projID: $projectID) {
+#     columns {
+#       ...columnDetails
+#     }
+#   }
+# }
+
+# query {
+#   queryProject {
+#     ...projectName
+#   }
+# }
+
+# --------
+# Mutation
+# --------
+
+mutation addTicket($ticket: AddTicketInput!) {
+  addTicket(input: [$ticket]) {
+    ticket {
+      ...ticketWithColumn
+    }
+  }
+}
+
+mutation updateTicket($ticketID: ID!, $ticket: TicketPatch) {
+  updateTicket(input: { filter: { id: [$ticketID] }, set: $ticket }) {
+    ticket {
+      ...ticketWithColumn
+    }
+  }
+}
+
+mutation deleteTicket($ticketID: ID!) {
+  deleteTicket(filter: { id: [$ticketID] }) {
+    msg
+    numUids
+  }
+}
+
+mutation addColumn($column: AddColumnInput!) {
+  addColumn(input: [$column]) {
+    column {
+      ...columnDetails
+    }
+  }
+}
+
+mutation updateColumn($colID: ID!, $ticketID: ID!) {
+  updateColumn(
+    input: {
+      filter: { colID: [$colID] }
+      set: { tickets: [{ id: $ticketID }] }
+    }
+  ) {
+    column {
+      ...columnDetails
+    }
+  }
+}

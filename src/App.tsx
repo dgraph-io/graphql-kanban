@@ -7,7 +7,8 @@ import {
   HttpLink,
   ApolloProvider,
 } from "@apollo/client"
-import { Home } from "./components"
+import { KanbanBoard, Header, Projects } from "./components"
+import { BrowserRouter, Switch, Route } from "react-router-dom"
 
 // FIXME: built from JWT info?
 const currentUser: User = {
@@ -26,9 +27,21 @@ const createApolloClient = () =>
 const App = () => {
   const client = createApolloClient()
   return (
-    <ApolloProvider client={client}>
-      <Home user={currentUser} />
-    </ApolloProvider>
+    <BrowserRouter>
+      <ApolloProvider client={client}>
+        <div>
+          <Header user={currentUser} />
+          <Switch>
+            <Route exact path="/project/:projID" component={KanbanBoard} />
+            <Route
+              exact
+              path="/"
+              render={(props) => <Projects {...props} withProjectEdits={currentUser.isAdmin === true}/>}
+            />
+          </Switch>
+        </div>
+      </ApolloProvider>
+    </BrowserRouter>
   )
 }
 export default App
