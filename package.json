@@ -17,6 +17,7 @@
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
+    "react-trello": "^2.2.6",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.2",
     "typescript": "~3.7.2"
@@ -53,6 +54,7 @@
     "@graphql-codegen/typescript-operations": "^1.15.1",
     "@graphql-codegen/typescript-react-apollo": "^1.15.1",
     "@types/node-fetch": "^2.5.7",
+    "@types/react-router-dom": "^5.1.5",
     "@types/semantic-ui": "^2.2.7",
     "ts-node": "^8.10.2"
   }

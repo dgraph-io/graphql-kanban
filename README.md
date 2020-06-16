@@ -31,8 +31,8 @@ Basic set up of the app
 ```sh
 npx create-react-app graphql-kanban --template typescript
 cd graphql-kanban
-npm install graphql @apollo/client react-router-dom semantic-ui-react semantic-ui-css
-yarn add -D @graphql-codegen/cli @graphql-codegen/typescript @graphql-codegen/typescript-operations @graphql-codegen/typescript-react-apollo @graphql-codegen/add @graphql-codegen/near-operation-file-preset
+npm install graphql @apollo/client react-router-dom semantic-ui-react semantic-ui-css react-trello
+yarn add -D @graphql-codegen/cli @graphql-codegen/typescript @graphql-codegen/typescript-operations @graphql-codegen/typescript-react-apollo @graphql-codegen/add @graphql-codegen/near-operation-file-preset @types/react-router-dom
 yarn install
 ```
 

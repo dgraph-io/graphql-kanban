@@ -2,6 +2,7 @@ import React from "react"
 import { Container, Dropdown, Image, Menu } from "semantic-ui-react"
 import { User } from "../../types/graphql"
 import { useProjectNamesQuery } from "./types/operations"
+import { Link } from "react-router-dom"
 
 export interface HeaderProps {
   user: User
@@ -17,7 +18,7 @@ function useProjectMenuList() {
   return (
     <Dropdown.Menu>
       {data?.queryProject?.map((proj) => (
-        <Dropdown.Item>{proj?.name}</Dropdown.Item>
+        <Dropdown.Item as={Link} to={"/project/"+proj?.projID}>{proj?.name}</Dropdown.Item>
       ))}
     </Dropdown.Menu>
   )
@@ -37,7 +38,8 @@ function Header(props: HeaderProps) {
           />
         </Menu.Item>
 
-        <Menu.Item as="a">Home</Menu.Item>
+        <Menu.Item as={Link} to="/">
+          Home</Menu.Item>
 
         <Dropdown item simple text="Projects">
           {useProjectMenuList()}

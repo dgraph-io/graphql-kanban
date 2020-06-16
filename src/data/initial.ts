@@ -14,7 +14,7 @@ import { GraphQLError } from "graphql";
 const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: new HttpLink({
-    uri: "http://localhost:8180/graphql",
+    uri: "http://localhost:8080/graphql",
     fetch: fetch,
   }),
 });
