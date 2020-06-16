@@ -11,7 +11,7 @@ import {
 } from "semantic-ui-react"
 import ProjectModal from "./project-modal"
 import { useAllProjectsDetailsQuery } from "./types/operations"
-import UserWithIcon from "./user"
+import { UserWithIcon } from "../User/user"
 
 export interface ProjectProps {
   withProjectEdits: boolean
@@ -76,7 +76,11 @@ function ProjectList(withProjectEdits: boolean) {
       <Table.Row>
         <Table.Cell>
           <Header as="h4" image>
-            <a href={proj?.url ?? ""} target="__blank" style={{color: "black"}}>
+            <a
+              href={proj?.url ?? ""}
+              target="__blank"
+              style={{ color: "black" }}
+            >
               <Icon name={icon} size="large" verticalAlign="middle" />
             </a>
             <Header.Content>

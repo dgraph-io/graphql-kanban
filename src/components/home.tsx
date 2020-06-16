@@ -1,19 +1,17 @@
-import React from "react";
-import { User } from "../types/graphql";
-import Header from "./header";
-import Projects from "./projects";
+import React from "react"
+import { User } from "../types/graphql"
+import { Header } from "./Header"
+import { Projects } from "./Projects"
 
 export interface HomeProps {
-  user: User;
+  user: User
 }
 
-function HomePage(props: HomeProps) {
+export function Home(props: HomeProps) {
   return (
     <div>
       <Header user={props.user} />
       <Projects withProjectEdits={props.user.isAdmin === true} />
     </div>
-  );
+  )
 }
-
-export default HomePage;

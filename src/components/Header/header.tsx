@@ -1,6 +1,6 @@
 import React from "react"
 import { Container, Dropdown, Image, Menu } from "semantic-ui-react"
-import { User } from "../types/graphql"
+import { User } from "../../types/graphql"
 import { useProjectNamesQuery } from "./types/operations"
 
 export interface HeaderProps {
