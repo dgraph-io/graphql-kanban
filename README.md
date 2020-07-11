@@ -1,5 +1,7 @@
 Project management kanban board app built with Dgraph GraphQL.  
 
+**Use [Discuss Issues](https://discuss.dgraph.io/tags/c/issues/35) for reporting issues about this repository.**
+
 *Currently in early stages development*
 
 Tech stack:
