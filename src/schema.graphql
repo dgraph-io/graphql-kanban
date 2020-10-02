@@ -13,6 +13,8 @@ type Project {
   admin: User
   roles: [Role]
   columns: [Column] @hasInverse(field: inProject)
+  "A JSON array storing the order of the columns by id"
+  order: String
 }
 
 type Role {
@@ -30,15 +32,17 @@ type Column {
   colID: ID!
   inProject: Project!
   name: String!
-  orderPreference: Int!
+  orderPreference: Int @deprecated(reason: "To order columns inside projects use Project.order")
   tickets: [Ticket] @hasInverse(field: onColumn)
+  "A JSON array storing the order of the tickets by id"
+  order: String
 }
 
 type Ticket {
   id: ID!
   onColumn: Column!
   title: String! @search(by: [term])
-  description: String!
-  orderPreference: Int!
+  description: String
+  orderPreference: Int @deprecated(reason: "To order tickets inside columns use Column.order")
   assignedTo: [User!]
 }
