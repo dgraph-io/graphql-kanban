@@ -28,7 +28,7 @@ function Projects(props: ProjectProps) {
   }
 
   return (
-    <Container text style={{ marginTop: "10em" }}>
+    <Container text>
       {props.withProjectEdits && (
         <Modal
           open={modalVisible}

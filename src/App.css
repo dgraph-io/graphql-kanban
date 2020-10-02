@@ -1,3 +1,7 @@
+#root {
+  height: -webkit-fill-available;
+}
+
 .App {
   text-align: center;
 }

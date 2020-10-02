@@ -29,7 +29,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <ApolloProvider client={client}>
-        <div>
+        <div style={{ height: "-webkit-fill-available", paddingTop: "10em" }}>
           <Header user={currentUser} />
           <Switch>
             <Route exact path="/project/:projID" component={KanbanBoard} />

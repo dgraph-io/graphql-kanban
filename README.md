@@ -17,7 +17,6 @@ Soon to come:
 - [ ] Auth0 login
 - [ ] Netify deploments
 - [ ] Slash GraphQL backend
-- [ ] Board view
  
 # Running
 
@@ -33,7 +32,7 @@ Basic set up of the app
 ```sh
 npx create-react-app graphql-kanban --template typescript
 cd graphql-kanban
-npm install graphql @apollo/client react-router-dom semantic-ui-react semantic-ui-css react-trello
+npm install graphql @apollo/client react-router-dom semantic-ui-react semantic-ui-css react-beautiful-dnd
 yarn add -D @graphql-codegen/cli @graphql-codegen/typescript @graphql-codegen/typescript-operations @graphql-codegen/typescript-react-apollo @graphql-codegen/add @graphql-codegen/near-operation-file-preset @types/react-router-dom
 yarn install
 ```
