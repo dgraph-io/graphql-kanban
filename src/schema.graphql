@@ -5,7 +5,20 @@ type User {
   tickets: [Ticket] @hasInverse(field: assignedTo)
 }
 
-type Project {
+type Project
+  @auth(
+    query: {
+      or: [
+        { rule: "query { queryProject { projID } }" }
+        {
+          rule: "query ($username: String!) { queryProject { admin(filter: {username: {eq: $username}}) { username } } }"
+        }
+        {
+          rule: "query ($username: String!) { queryProject { roles { assignedTo(filter: {username: {eq: $username}}) { username } } } }"
+        }
+      ]
+    }
+  ) {
   projID: ID!
   name: String! @search(by: [term])
   url: String
@@ -32,7 +45,8 @@ type Column {
   colID: ID!
   inProject: Project!
   name: String!
-  orderPreference: Int @deprecated(reason: "To order columns inside projects use Project.order")
+  orderPreference: Int
+    @deprecated(reason: "To order columns inside projects use Project.order")
   tickets: [Ticket] @hasInverse(field: onColumn)
   "A JSON array storing the order of the tickets by id"
   order: String
@@ -43,6 +57,9 @@ type Ticket {
   onColumn: Column!
   title: String! @search(by: [term])
   description: String
-  orderPreference: Int @deprecated(reason: "To order tickets inside columns use Column.order")
+  orderPreference: Int
+    @deprecated(reason: "To order tickets inside columns use Column.order")
   assignedTo: [User!]
 }
+
+# Dgraph.Authorization {"VerificationKey":"AUTH0_PUBLIC_KEY","Header":"token","Namespace":"https://example.com/claims/graphqlkanban","Algo":"RS256","Audience":["REACT_APP_AUTH0_CLIENT_ID"]}

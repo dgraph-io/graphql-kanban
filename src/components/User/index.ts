@@ -1,3 +1,3 @@
-import { UserWithIcon } from "./user"
+import { UserWithIcon } from "./user";
 
-export { UserWithIcon }
+export { UserWithIcon };

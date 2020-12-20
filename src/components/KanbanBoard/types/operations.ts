@@ -1,9 +1,7 @@
 import * as Types from '../../../types/graphql';
 
-import gql from 'graphql-tag';
-import * as ApolloReactCommon from '@apollo/client';
-import * as ApolloReactHooks from '@apollo/client';
-
+import { gql } from '@apollo/client';
+import * as Apollo from '@apollo/client';
 export type ProjectNameFragment = (
   { __typename?: 'Project' }
   & Pick<Types.Project, 'projID' | 'name'>
@@ -37,9 +35,9 @@ export type TicketWithColumnFragment = (
   & TicketDetailsFragment
 );
 
-export type GetProjectQueryVariables = {
+export type GetProjectQueryVariables = Types.Exact<{
   projectID: Types.Scalars['ID'];
-};
+}>;
 
 
 export type GetProjectQuery = (
@@ -58,9 +56,9 @@ export type GetProjectQuery = (
   )> }
 );
 
-export type GetTicketQueryVariables = {
+export type GetTicketQueryVariables = Types.Exact<{
   ticketID: Types.Scalars['ID'];
-};
+}>;
 
 
 export type GetTicketQuery = (
@@ -71,9 +69,9 @@ export type GetTicketQuery = (
   )> }
 );
 
-export type AddTicketMutationVariables = {
+export type AddTicketMutationVariables = Types.Exact<{
   ticket: Types.AddTicketInput;
-};
+}>;
 
 
 export type AddTicketMutation = (
@@ -87,10 +85,10 @@ export type AddTicketMutation = (
   )> }
 );
 
-export type UpdateTicketMutationVariables = {
+export type UpdateTicketMutationVariables = Types.Exact<{
   ticketID: Types.Scalars['ID'];
   ticket?: Types.Maybe<Types.TicketPatch>;
-};
+}>;
 
 
 export type UpdateTicketMutation = (
@@ -104,9 +102,9 @@ export type UpdateTicketMutation = (
   )> }
 );
 
-export type DeleteTicketMutationVariables = {
+export type DeleteTicketMutationVariables = Types.Exact<{
   ticketID: Types.Scalars['ID'];
-};
+}>;
 
 
 export type DeleteTicketMutation = (
@@ -117,9 +115,9 @@ export type DeleteTicketMutation = (
   )> }
 );
 
-export type AddColumnMutationVariables = {
+export type AddColumnMutationVariables = Types.Exact<{
   column: Types.AddColumnInput;
-};
+}>;
 
 
 export type AddColumnMutation = (
@@ -133,10 +131,10 @@ export type AddColumnMutation = (
   )> }
 );
 
-export type UpdateColumnMutationVariables = {
+export type UpdateColumnMutationVariables = Types.Exact<{
   colID: Types.Scalars['ID'];
   ticketID: Types.Scalars['ID'];
-};
+}>;
 
 
 export type UpdateColumnMutation = (
@@ -219,15 +217,15 @@ ${TicketDetailsFragmentDoc}`;
  *   },
  * });
  */
-export function useGetProjectQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<GetProjectQuery, GetProjectQueryVariables>) {
-        return ApolloReactHooks.useQuery<GetProjectQuery, GetProjectQueryVariables>(GetProjectDocument, baseOptions);
+export function useGetProjectQuery(baseOptions: Apollo.QueryHookOptions<GetProjectQuery, GetProjectQueryVariables>) {
+        return Apollo.useQuery<GetProjectQuery, GetProjectQueryVariables>(GetProjectDocument, baseOptions);
       }
-export function useGetProjectLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetProjectQuery, GetProjectQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<GetProjectQuery, GetProjectQueryVariables>(GetProjectDocument, baseOptions);
+export function useGetProjectLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetProjectQuery, GetProjectQueryVariables>) {
+          return Apollo.useLazyQuery<GetProjectQuery, GetProjectQueryVariables>(GetProjectDocument, baseOptions);
         }
 export type GetProjectQueryHookResult = ReturnType<typeof useGetProjectQuery>;
 export type GetProjectLazyQueryHookResult = ReturnType<typeof useGetProjectLazyQuery>;
-export type GetProjectQueryResult = ApolloReactCommon.QueryResult<GetProjectQuery, GetProjectQueryVariables>;
+export type GetProjectQueryResult = Apollo.QueryResult<GetProjectQuery, GetProjectQueryVariables>;
 export const GetTicketDocument = gql`
     query getTicket($ticketID: ID!) {
   getTicket(id: $ticketID) {
@@ -252,15 +250,15 @@ export const GetTicketDocument = gql`
  *   },
  * });
  */
-export function useGetTicketQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<GetTicketQuery, GetTicketQueryVariables>) {
-        return ApolloReactHooks.useQuery<GetTicketQuery, GetTicketQueryVariables>(GetTicketDocument, baseOptions);
+export function useGetTicketQuery(baseOptions: Apollo.QueryHookOptions<GetTicketQuery, GetTicketQueryVariables>) {
+        return Apollo.useQuery<GetTicketQuery, GetTicketQueryVariables>(GetTicketDocument, baseOptions);
       }
-export function useGetTicketLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetTicketQuery, GetTicketQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<GetTicketQuery, GetTicketQueryVariables>(GetTicketDocument, baseOptions);
+export function useGetTicketLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTicketQuery, GetTicketQueryVariables>) {
+          return Apollo.useLazyQuery<GetTicketQuery, GetTicketQueryVariables>(GetTicketDocument, baseOptions);
         }
 export type GetTicketQueryHookResult = ReturnType<typeof useGetTicketQuery>;
 export type GetTicketLazyQueryHookResult = ReturnType<typeof useGetTicketLazyQuery>;
-export type GetTicketQueryResult = ApolloReactCommon.QueryResult<GetTicketQuery, GetTicketQueryVariables>;
+export type GetTicketQueryResult = Apollo.QueryResult<GetTicketQuery, GetTicketQueryVariables>;
 export const AddTicketDocument = gql`
     mutation addTicket($ticket: AddTicketInput!) {
   addTicket(input: [$ticket]) {
@@ -270,7 +268,7 @@ export const AddTicketDocument = gql`
   }
 }
     ${TicketWithColumnFragmentDoc}`;
-export type AddTicketMutationFn = ApolloReactCommon.MutationFunction<AddTicketMutation, AddTicketMutationVariables>;
+export type AddTicketMutationFn = Apollo.MutationFunction<AddTicketMutation, AddTicketMutationVariables>;
 
 /**
  * __useAddTicketMutation__
@@ -289,12 +287,12 @@ export type AddTicketMutationFn = ApolloReactCommon.MutationFunction<AddTicketMu
  *   },
  * });
  */
-export function useAddTicketMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<AddTicketMutation, AddTicketMutationVariables>) {
-        return ApolloReactHooks.useMutation<AddTicketMutation, AddTicketMutationVariables>(AddTicketDocument, baseOptions);
+export function useAddTicketMutation(baseOptions?: Apollo.MutationHookOptions<AddTicketMutation, AddTicketMutationVariables>) {
+        return Apollo.useMutation<AddTicketMutation, AddTicketMutationVariables>(AddTicketDocument, baseOptions);
       }
 export type AddTicketMutationHookResult = ReturnType<typeof useAddTicketMutation>;
-export type AddTicketMutationResult = ApolloReactCommon.MutationResult<AddTicketMutation>;
-export type AddTicketMutationOptions = ApolloReactCommon.BaseMutationOptions<AddTicketMutation, AddTicketMutationVariables>;
+export type AddTicketMutationResult = Apollo.MutationResult<AddTicketMutation>;
+export type AddTicketMutationOptions = Apollo.BaseMutationOptions<AddTicketMutation, AddTicketMutationVariables>;
 export const UpdateTicketDocument = gql`
     mutation updateTicket($ticketID: ID!, $ticket: TicketPatch) {
   updateTicket(input: {filter: {id: [$ticketID]}, set: $ticket}) {
@@ -304,7 +302,7 @@ export const UpdateTicketDocument = gql`
   }
 }
     ${TicketWithColumnFragmentDoc}`;
-export type UpdateTicketMutationFn = ApolloReactCommon.MutationFunction<UpdateTicketMutation, UpdateTicketMutationVariables>;
+export type UpdateTicketMutationFn = Apollo.MutationFunction<UpdateTicketMutation, UpdateTicketMutationVariables>;
 
 /**
  * __useUpdateTicketMutation__
@@ -324,12 +322,12 @@ export type UpdateTicketMutationFn = ApolloReactCommon.MutationFunction<UpdateTi
  *   },
  * });
  */
-export function useUpdateTicketMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<UpdateTicketMutation, UpdateTicketMutationVariables>) {
-        return ApolloReactHooks.useMutation<UpdateTicketMutation, UpdateTicketMutationVariables>(UpdateTicketDocument, baseOptions);
+export function useUpdateTicketMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTicketMutation, UpdateTicketMutationVariables>) {
+        return Apollo.useMutation<UpdateTicketMutation, UpdateTicketMutationVariables>(UpdateTicketDocument, baseOptions);
       }
 export type UpdateTicketMutationHookResult = ReturnType<typeof useUpdateTicketMutation>;
-export type UpdateTicketMutationResult = ApolloReactCommon.MutationResult<UpdateTicketMutation>;
-export type UpdateTicketMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdateTicketMutation, UpdateTicketMutationVariables>;
+export type UpdateTicketMutationResult = Apollo.MutationResult<UpdateTicketMutation>;
+export type UpdateTicketMutationOptions = Apollo.BaseMutationOptions<UpdateTicketMutation, UpdateTicketMutationVariables>;
 export const DeleteTicketDocument = gql`
     mutation deleteTicket($ticketID: ID!) {
   deleteTicket(filter: {id: [$ticketID]}) {
@@ -338,7 +336,7 @@ export const DeleteTicketDocument = gql`
   }
 }
     `;
-export type DeleteTicketMutationFn = ApolloReactCommon.MutationFunction<DeleteTicketMutation, DeleteTicketMutationVariables>;
+export type DeleteTicketMutationFn = Apollo.MutationFunction<DeleteTicketMutation, DeleteTicketMutationVariables>;
 
 /**
  * __useDeleteTicketMutation__
@@ -357,12 +355,12 @@ export type DeleteTicketMutationFn = ApolloReactCommon.MutationFunction<DeleteTi
  *   },
  * });
  */
-export function useDeleteTicketMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<DeleteTicketMutation, DeleteTicketMutationVariables>) {
-        return ApolloReactHooks.useMutation<DeleteTicketMutation, DeleteTicketMutationVariables>(DeleteTicketDocument, baseOptions);
+export function useDeleteTicketMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTicketMutation, DeleteTicketMutationVariables>) {
+        return Apollo.useMutation<DeleteTicketMutation, DeleteTicketMutationVariables>(DeleteTicketDocument, baseOptions);
       }
 export type DeleteTicketMutationHookResult = ReturnType<typeof useDeleteTicketMutation>;
-export type DeleteTicketMutationResult = ApolloReactCommon.MutationResult<DeleteTicketMutation>;
-export type DeleteTicketMutationOptions = ApolloReactCommon.BaseMutationOptions<DeleteTicketMutation, DeleteTicketMutationVariables>;
+export type DeleteTicketMutationResult = Apollo.MutationResult<DeleteTicketMutation>;
+export type DeleteTicketMutationOptions = Apollo.BaseMutationOptions<DeleteTicketMutation, DeleteTicketMutationVariables>;
 export const AddColumnDocument = gql`
     mutation addColumn($column: AddColumnInput!) {
   addColumn(input: [$column]) {
@@ -372,7 +370,7 @@ export const AddColumnDocument = gql`
   }
 }
     ${ColumnDetailsFragmentDoc}`;
-export type AddColumnMutationFn = ApolloReactCommon.MutationFunction<AddColumnMutation, AddColumnMutationVariables>;
+export type AddColumnMutationFn = Apollo.MutationFunction<AddColumnMutation, AddColumnMutationVariables>;
 
 /**
  * __useAddColumnMutation__
@@ -391,22 +389,24 @@ export type AddColumnMutationFn = ApolloReactCommon.MutationFunction<AddColumnMu
  *   },
  * });
  */
-export function useAddColumnMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<AddColumnMutation, AddColumnMutationVariables>) {
-        return ApolloReactHooks.useMutation<AddColumnMutation, AddColumnMutationVariables>(AddColumnDocument, baseOptions);
+export function useAddColumnMutation(baseOptions?: Apollo.MutationHookOptions<AddColumnMutation, AddColumnMutationVariables>) {
+        return Apollo.useMutation<AddColumnMutation, AddColumnMutationVariables>(AddColumnDocument, baseOptions);
       }
 export type AddColumnMutationHookResult = ReturnType<typeof useAddColumnMutation>;
-export type AddColumnMutationResult = ApolloReactCommon.MutationResult<AddColumnMutation>;
-export type AddColumnMutationOptions = ApolloReactCommon.BaseMutationOptions<AddColumnMutation, AddColumnMutationVariables>;
+export type AddColumnMutationResult = Apollo.MutationResult<AddColumnMutation>;
+export type AddColumnMutationOptions = Apollo.BaseMutationOptions<AddColumnMutation, AddColumnMutationVariables>;
 export const UpdateColumnDocument = gql`
     mutation updateColumn($colID: ID!, $ticketID: ID!) {
-  updateColumn(input: {filter: {colID: [$colID]}, set: {tickets: [{id: $ticketID}]}}) {
+  updateColumn(
+    input: {filter: {colID: [$colID]}, set: {tickets: [{id: $ticketID}]}}
+  ) {
     column {
       ...columnDetails
     }
   }
 }
     ${ColumnDetailsFragmentDoc}`;
-export type UpdateColumnMutationFn = ApolloReactCommon.MutationFunction<UpdateColumnMutation, UpdateColumnMutationVariables>;
+export type UpdateColumnMutationFn = Apollo.MutationFunction<UpdateColumnMutation, UpdateColumnMutationVariables>;
 
 /**
  * __useUpdateColumnMutation__
@@ -426,9 +426,9 @@ export type UpdateColumnMutationFn = ApolloReactCommon.MutationFunction<UpdateCo
  *   },
  * });
  */
-export function useUpdateColumnMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<UpdateColumnMutation, UpdateColumnMutationVariables>) {
-        return ApolloReactHooks.useMutation<UpdateColumnMutation, UpdateColumnMutationVariables>(UpdateColumnDocument, baseOptions);
+export function useUpdateColumnMutation(baseOptions?: Apollo.MutationHookOptions<UpdateColumnMutation, UpdateColumnMutationVariables>) {
+        return Apollo.useMutation<UpdateColumnMutation, UpdateColumnMutationVariables>(UpdateColumnDocument, baseOptions);
       }
 export type UpdateColumnMutationHookResult = ReturnType<typeof useUpdateColumnMutation>;
-export type UpdateColumnMutationResult = ApolloReactCommon.MutationResult<UpdateColumnMutation>;
-export type UpdateColumnMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdateColumnMutation, UpdateColumnMutationVariables>;
+export type UpdateColumnMutationResult = Apollo.MutationResult<UpdateColumnMutation>;
+export type UpdateColumnMutationOptions = Apollo.BaseMutationOptions<UpdateColumnMutation, UpdateColumnMutationVariables>;

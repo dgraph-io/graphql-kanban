@@ -1,47 +1,54 @@
-import React from "react"
-import "./App.css"
-import { User } from "./types/graphql"
-import {
-  ApolloClient,
-  InMemoryCache,
-  HttpLink,
-  ApolloProvider,
-} from "@apollo/client"
-import { KanbanBoard, Header, Projects } from "./components"
-import { BrowserRouter, Switch, Route } from "react-router-dom"
+import React, { useEffect } from "react";
+import "./App.css";
+import { ApolloProvider } from "@apollo/client";
+import { KanbanBoard, Header, Projects } from "./components";
+import { Header as SUHeader } from "semantic-ui-react";
+import { Switch, Route, BrowserRouter } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
+import createApolloClient from "./ApolloConfig";
 
-// FIXME: built from JWT info?
-const currentUser: User = {
-  username: "Michael",
-  isAdmin: true,
-}
-
-const createApolloClient = () =>
-  new ApolloClient({
-    cache: new InMemoryCache(),
-    link: new HttpLink({
-      uri: process.env.REACT_APP_DGRAPH_BACKEND,
-    }),
-  })
+const CLAIMS = process.env.REACT_APP_AUTH0_CLAIMS_KEY as string;
 
 const App = () => {
-  const client = createApolloClient()
+  const { user, isAuthenticated, isLoading, getIdTokenClaims } = useAuth0();
+  const currentUser = user?.[CLAIMS] || {};
+  useEffect(() => {}, [isAuthenticated]);
   return (
-    <BrowserRouter>
-      <ApolloProvider client={client}>
+    <ApolloProvider
+      client={createApolloClient(isAuthenticated ? getIdTokenClaims : null)}
+    >
+      <BrowserRouter>
         <div style={{ height: "-webkit-fill-available", paddingTop: "10em" }}>
-          <Header user={currentUser} />
+          {!isLoading && <Header />}
           <Switch>
             <Route exact path="/project/:projID" component={KanbanBoard} />
             <Route
-              exact
               path="/"
-              render={(props) => <Projects {...props} withProjectEdits={currentUser.isAdmin === true}/>}
+              render={(props) => (
+                <>
+                  {isAuthenticated && (
+                    <Projects
+                      {...props}
+                      // withProjectEdits={currentUser.isAdmin === true}
+                      withProjectEdits={
+                        isAuthenticated && Boolean(currentUser.username)
+                      }
+                    />
+                  )}
+                  {!isAuthenticated && (
+                    <SUHeader
+                      style={{ textAlign: "center" }}
+                      content="Please login above to see your projects."
+                      as="h4"
+                    />
+                  )}
+                </>
+              )}
             />
           </Switch>
         </div>
-      </ApolloProvider>
-    </BrowserRouter>
-  )
-}
-export default App
+      </BrowserRouter>
+    </ApolloProvider>
+  );
+};
+export default App;
