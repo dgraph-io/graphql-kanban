@@ -1,8 +1,8 @@
-import { gql } from "@apollo/client";
-import React from "react";
+import { gql, useMutation } from "@apollo/client";
+import React, { useEffect, useState } from "react";
 import { Draggable } from "react-beautiful-dnd";
-import { Button, Card, Icon, Ref } from "semantic-ui-react";
-import { DeleteTicketPayload } from "../../types/graphql";
+import { Button, Card, Form, Icon, Ref } from "semantic-ui-react";
+import { DeleteTicketPayload, UpdateTicketPayload } from "../../types/graphql";
 import useDelete from "../../utils/useDelete";
 
 interface TicketProps {
@@ -20,12 +20,52 @@ const DELETE_TICKET = gql`
   }
 `;
 
+const UPDATE_TICKET = gql`
+  mutation UDPATE_TICKET($id: ID!, $title: String!, $description: String!) {
+    updateTicket(
+      input: {
+        filter: { id: [$id] }
+        set: { title: $title, description: $description }
+      }
+    ) {
+      numUids
+      ticket {
+        id
+        title
+        description
+      }
+    }
+  }
+`;
+
 export function Ticket(props: TicketProps) {
   const { ticket, index } = props;
+  const [editing, editTicket] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  useEffect(() => {
+    setTitle(ticket?.title);
+    setDescription(ticket?.description);
+  }, [ticket]);
+  const [commenting, addComment] = useState(false);
   const [deleteTicket] = useDelete<
     { deleteTicket: DeleteTicketPayload },
     { id: string }
   >(DELETE_TICKET);
+  const [updateTicket] = useMutation<
+    { updateTicekt: UpdateTicketPayload },
+    { id: string; title: string; description: string }
+  >(UPDATE_TICKET);
+  const handleEditTicket = () => {
+    updateTicket({
+      variables: {
+        id: ticket.id,
+        title,
+        description,
+      },
+    });
+    editTicket(false);
+  };
   return (
     <Draggable draggableId={ticket.id} index={index}>
       {(provided) => (
@@ -41,15 +81,70 @@ export function Ticket(props: TicketProps) {
               borderRadius: "0.5em",
               marginTop: "5px",
             }}
+            {...provided.dragHandleProps}
           >
             <Card.Content>
-              <Card.Header {...provided.dragHandleProps}>
-                {ticket?.title}
-              </Card.Header>
-              <Card.Description>{ticket?.description}</Card.Description>
+              {editing && (
+                <Form onSubmit={handleEditTicket}>
+                  <Form.Input
+                    placeholder="Title"
+                    name="title"
+                    value={title}
+                    onChange={(e, { value }) => setTitle(value)}
+                  />
+                  <Form.TextArea
+                    placeholder="Description"
+                    name="description"
+                    value={description}
+                    onChange={(e, { value }) => setDescription(value as string)}
+                  />
+                </Form>
+              )}
+              {!editing && (
+                <>
+                  <Card.Header>{ticket?.title}</Card.Header>
+                  <Card.Description>{ticket?.description}</Card.Description>
+                </>
+              )}
             </Card.Content>
             <Card.Content>
-              <Button.Group widths={2} size="mini">
+              <Button.Group widths={3} size="mini">
+                <Button
+                  inverted
+                  negative
+                  animated="vertical"
+                  color={editing ? "grey" : "blue"}
+                  onClick={() =>
+                    editing ? editTicket(false) : addComment(!commenting)
+                  }
+                >
+                  <Button.Content visible>
+                    <Icon
+                      color={editing ? "grey" : undefined}
+                      name={editing ? "cancel" : "comment outline"}
+                    />
+                  </Button.Content>
+                  <Button.Content hidden>
+                    {editing ? "Cancel" : "Add Comment"}
+                  </Button.Content>
+                </Button>
+                <Button
+                  inverted
+                  negative
+                  animated="vertical"
+                  color={editing ? "green" : "orange"}
+                  onClick={() =>
+                    editing ? handleEditTicket() : editTicket(!editing)
+                  }
+                  // active={editing}
+                >
+                  <Button.Content visible>
+                    <Icon name={editing ? "save outline" : "edit outline"} />
+                  </Button.Content>
+                  <Button.Content hidden>
+                    {editing ? "Save Edits" : "Edit Ticket"}
+                  </Button.Content>
+                </Button>
                 <Button
                   inverted
                   negative
