@@ -1,5 +1,8 @@
-import React from "react";
+import { gql, useMutation } from "@apollo/client";
+import React, { useEffect, useState } from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
+import { Button, Input } from "semantic-ui-react";
+import { UpdateColumnPayload } from "../../types/graphql";
 import { NewTicket } from "./newTicket";
 import { Ticket } from "./ticket";
 
@@ -8,8 +11,34 @@ interface ColumnProps {
   index: number;
 }
 
+const UPDATE_COLUMN_NAME = gql`
+  mutation UPDATE_COLUMN_NAME($id: ID! $name: String!) {
+    updateColumn(input: {
+      filter: { colID: [$id] }
+      set: { name: $name }
+    }) {
+      numUids
+      column {
+        colID
+        name
+      }
+    }
+  }
+`
+
 export function Column(props: ColumnProps) {
   const { column, index } = props;
+  const [editing, editColumn] = useState(false)
+  const [name, setName] = useState('')
+  useEffect(()=>{
+    setName(column.name)
+  },[column])
+  const [saveColumnName] = useMutation<
+    { updateColumn: UpdateColumnPayload },
+    { id: string, name: string }
+  >(UPDATE_COLUMN_NAME, {
+    onCompleted: () => editColumn(false)
+  })
   return (
     <Draggable draggableId={column.colID} index={index}>
       {(provided) => (
@@ -35,9 +64,19 @@ export function Column(props: ColumnProps) {
         >
           <div
             {...provided.dragHandleProps}
-            style={{ paddingLeft: "10px", paddingRight: "10px" }}
+            style={{ paddingLeft: "10px", paddingRight: "10px", display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}
           >
-            <h3>{column?.name}</h3>
+            {!editing && <>
+              <h3>{column?.name}</h3>
+              <Button onClick={()=>editColumn(true)} size='mini' basic color='orange' icon='edit outline'/>
+            </>}
+            {editing && <>
+              <Input name='name' placeholder='Column Name' value={name} onChange={(e,{value})=>setName(value)} fluid style={{ flexGrow: '1', paddingRight: '8px' }} />
+              <div style={{ display: 'flex' }}>
+                <Button onClick={()=>editColumn(false)} size='mini' color='grey' basic icon='cancel'/>
+                <Button onClick={()=>saveColumnName({ variables: { id: column.colID, name } })} size='mini' color='green' icon='save outline'/>
+              </div>
+            </>}
           </div>
           <Droppable droppableId={column.colID} type="tickets">
             {(provided) => (
