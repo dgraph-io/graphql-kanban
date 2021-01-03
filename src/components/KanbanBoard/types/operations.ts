@@ -7,9 +7,51 @@ export type ProjectNameFragment = (
   & Pick<Types.Project, 'projID' | 'name'>
 );
 
+export type ProjectOrderFragment = (
+  { __typename?: 'Project' }
+  & Pick<Types.Project, 'projID' | 'order'>
+);
+
+export type ProjectAllDetailsFragment = (
+  { __typename?: 'Project' }
+  & Pick<Types.Project, 'projID' | 'name' | 'url' | 'description' | 'order'>
+);
+
+export type ProjectWithColumnsFragment = (
+  { __typename?: 'Project' }
+  & Pick<Types.Project, 'projID'>
+  & { columns?: Types.Maybe<Array<Types.Maybe<(
+    { __typename?: 'Column' }
+    & Pick<Types.Column, 'colID'>
+  )>>> }
+);
+
 export type ColumnDetailsFragment = (
   { __typename?: 'Column' }
   & Pick<Types.Column, 'colID' | 'name'>
+);
+
+export type ColumnOrderFragment = (
+  { __typename?: 'Column' }
+  & Pick<Types.Column, 'colID' | 'order'>
+);
+
+export type ColumnWithTicketsFragment = (
+  { __typename?: 'Column' }
+  & Pick<Types.Column, 'colID' | 'name' | 'order'>
+  & { tickets?: Types.Maybe<Array<Types.Maybe<(
+    { __typename?: 'Ticket' }
+    & TicketDetailsFragment
+  )>>> }
+);
+
+export type ColumnWithProjectColumnsFragment = (
+  { __typename?: 'Column' }
+  & Pick<Types.Column, 'colID' | 'name'>
+  & { inProject: (
+    { __typename?: 'Project' }
+    & ProjectWithColumnsFragment
+  ) }
 );
 
 export type UserNamesFragment = (
@@ -35,6 +77,24 @@ export type TicketWithColumnFragment = (
   & TicketDetailsFragment
 );
 
+export type TicketWithColumnWithTicketsFragment = (
+  { __typename?: 'Ticket' }
+  & { onColumn: (
+    { __typename?: 'Column' }
+    & ColumnWithTicketsFragment
+  ) }
+  & TicketDetailsFragment
+);
+
+export type RoleDetailsFragment = (
+  { __typename?: 'Role' }
+  & Pick<Types.Role, 'id' | 'permission'>
+  & { assignedTo?: Types.Maybe<Array<Types.Maybe<(
+    { __typename?: 'User' }
+    & UserNamesFragment
+  )>>> }
+);
+
 export type GetProjectQueryVariables = Types.Exact<{
   projectID: Types.Scalars['ID'];
 }>;
@@ -44,15 +104,17 @@ export type GetProjectQuery = (
   { __typename?: 'Query' }
   & { getProject?: Types.Maybe<(
     { __typename?: 'Project' }
-    & { columns?: Types.Maybe<Array<Types.Maybe<(
+    & { admin?: Types.Maybe<(
+      { __typename?: 'User' }
+      & UserNamesFragment
+    )>, roles?: Types.Maybe<Array<Types.Maybe<(
+      { __typename?: 'Role' }
+      & RoleDetailsFragment
+    )>>>, columns?: Types.Maybe<Array<Types.Maybe<(
       { __typename?: 'Column' }
-      & { tickets?: Types.Maybe<Array<Types.Maybe<(
-        { __typename?: 'Ticket' }
-        & TicketDetailsFragment
-      )>>> }
-      & ColumnDetailsFragment
+      & ColumnWithTicketsFragment
     )>>> }
-    & ProjectNameFragment
+    & ProjectAllDetailsFragment
   )> }
 );
 
@@ -80,7 +142,7 @@ export type AddTicketMutation = (
     { __typename?: 'AddTicketPayload' }
     & { ticket?: Types.Maybe<Array<Types.Maybe<(
       { __typename?: 'Ticket' }
-      & TicketWithColumnFragment
+      & TicketWithColumnWithTicketsFragment
     )>>> }
   )> }
 );
@@ -111,7 +173,10 @@ export type DeleteTicketMutation = (
   { __typename?: 'Mutation' }
   & { deleteTicket?: Types.Maybe<(
     { __typename?: 'DeleteTicketPayload' }
-    & Pick<Types.DeleteTicketPayload, 'msg' | 'numUids'>
+    & { ticket?: Types.Maybe<Array<Types.Maybe<(
+      { __typename?: 'Ticket' }
+      & Pick<Types.Ticket, 'id'>
+    )>>> }
   )> }
 );
 
@@ -126,7 +191,7 @@ export type AddColumnMutation = (
     { __typename?: 'AddColumnPayload' }
     & { column?: Types.Maybe<Array<Types.Maybe<(
       { __typename?: 'Column' }
-      & ColumnDetailsFragment
+      & ColumnWithProjectColumnsFragment
     )>>> }
   )> }
 );
@@ -148,12 +213,141 @@ export type UpdateColumnMutation = (
   )> }
 );
 
+export type SetColumnOrderMutationVariables = Types.Exact<{
+  projID: Types.Scalars['ID'];
+  order: Types.Scalars['String'];
+}>;
+
+
+export type SetColumnOrderMutation = (
+  { __typename?: 'Mutation' }
+  & { updateProject?: Types.Maybe<(
+    { __typename?: 'UpdateProjectPayload' }
+    & { project?: Types.Maybe<Array<Types.Maybe<(
+      { __typename?: 'Project' }
+      & ProjectOrderFragment
+    )>>> }
+  )> }
+);
+
+export type DeleteColumnMutationVariables = Types.Exact<{
+  colID: Types.Scalars['ID'];
+}>;
+
+
+export type DeleteColumnMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteColumn?: Types.Maybe<(
+    { __typename?: 'DeleteColumnPayload' }
+    & { column?: Types.Maybe<Array<Types.Maybe<(
+      { __typename?: 'Column' }
+      & Pick<Types.Column, 'colID'>
+    )>>> }
+  )> }
+);
+
+export type SetTicketOrderMutationVariables = Types.Exact<{
+  colID: Types.Scalars['ID'];
+  order: Types.Scalars['String'];
+}>;
+
+
+export type SetTicketOrderMutation = (
+  { __typename?: 'Mutation' }
+  & { updateColumn?: Types.Maybe<(
+    { __typename?: 'UpdateColumnPayload' }
+    & { column?: Types.Maybe<Array<Types.Maybe<(
+      { __typename?: 'Column' }
+      & ColumnOrderFragment
+    )>>> }
+  )> }
+);
+
+export type MoveTicketMutationVariables = Types.Exact<{
+  id: Types.Scalars['ID'];
+  colID: Types.Scalars['ID'];
+  order: Types.Scalars['String'];
+}>;
+
+
+export type MoveTicketMutation = (
+  { __typename?: 'Mutation' }
+  & { updateTicket?: Types.Maybe<(
+    { __typename?: 'UpdateTicketPayload' }
+    & { ticket?: Types.Maybe<Array<Types.Maybe<(
+      { __typename?: 'Ticket' }
+      & TicketWithColumnFragment
+    )>>> }
+  )>, updateColumn?: Types.Maybe<(
+    { __typename?: 'UpdateColumnPayload' }
+    & { column?: Types.Maybe<Array<Types.Maybe<(
+      { __typename?: 'Column' }
+      & ColumnOrderFragment
+    )>>> }
+  )> }
+);
+
+export type UpdateColumnNameMutationVariables = Types.Exact<{
+  colID: Types.Scalars['ID'];
+  name: Types.Scalars['String'];
+}>;
+
+
+export type UpdateColumnNameMutation = (
+  { __typename?: 'Mutation' }
+  & { updateColumn?: Types.Maybe<(
+    { __typename?: 'UpdateColumnPayload' }
+    & { column?: Types.Maybe<Array<Types.Maybe<(
+      { __typename?: 'Column' }
+      & ColumnDetailsFragment
+    )>>> }
+  )> }
+);
+
 export const ProjectNameFragmentDoc = gql`
     fragment projectName on Project {
   projID
   name
 }
     `;
+export const ProjectOrderFragmentDoc = gql`
+    fragment projectOrder on Project {
+  projID
+  order
+}
+    `;
+export const ProjectAllDetailsFragmentDoc = gql`
+    fragment projectAllDetails on Project {
+  projID
+  name
+  url
+  description
+  order
+}
+    `;
+export const ColumnOrderFragmentDoc = gql`
+    fragment columnOrder on Column {
+  colID
+  order
+}
+    `;
+export const ProjectWithColumnsFragmentDoc = gql`
+    fragment projectWithColumns on Project {
+  projID
+  columns {
+    colID
+  }
+}
+    `;
+export const ColumnWithProjectColumnsFragmentDoc = gql`
+    fragment columnWithProjectColumns on Column {
+  colID
+  name
+  inProject {
+    ...projectWithColumns
+  }
+}
+    ${ProjectWithColumnsFragmentDoc}`;
 export const UserNamesFragmentDoc = gql`
     fragment userNames on User {
   username
@@ -185,21 +379,53 @@ export const TicketWithColumnFragmentDoc = gql`
 }
     ${TicketDetailsFragmentDoc}
 ${ColumnDetailsFragmentDoc}`;
+export const ColumnWithTicketsFragmentDoc = gql`
+    fragment columnWithTickets on Column {
+  colID
+  name
+  tickets {
+    ...ticketDetails
+  }
+  order
+}
+    ${TicketDetailsFragmentDoc}`;
+export const TicketWithColumnWithTicketsFragmentDoc = gql`
+    fragment ticketWithColumnWithTickets on Ticket {
+  ...ticketDetails
+  onColumn {
+    ...columnWithTickets
+  }
+}
+    ${TicketDetailsFragmentDoc}
+${ColumnWithTicketsFragmentDoc}`;
+export const RoleDetailsFragmentDoc = gql`
+    fragment roleDetails on Role {
+  id
+  permission
+  assignedTo {
+    ...userNames
+  }
+}
+    ${UserNamesFragmentDoc}`;
 export const GetProjectDocument = gql`
     query getProject($projectID: ID!) {
   getProject(projID: $projectID) {
-    ...projectName
+    ...projectAllDetails
+    admin {
+      ...userNames
+    }
+    roles {
+      ...roleDetails
+    }
     columns {
-      ...columnDetails
-      tickets {
-        ...ticketDetails
-      }
+      ...columnWithTickets
     }
   }
 }
-    ${ProjectNameFragmentDoc}
-${ColumnDetailsFragmentDoc}
-${TicketDetailsFragmentDoc}`;
+    ${ProjectAllDetailsFragmentDoc}
+${UserNamesFragmentDoc}
+${RoleDetailsFragmentDoc}
+${ColumnWithTicketsFragmentDoc}`;
 
 /**
  * __useGetProjectQuery__
@@ -263,11 +489,11 @@ export const AddTicketDocument = gql`
     mutation addTicket($ticket: AddTicketInput!) {
   addTicket(input: [$ticket]) {
     ticket {
-      ...ticketWithColumn
+      ...ticketWithColumnWithTickets
     }
   }
 }
-    ${TicketWithColumnFragmentDoc}`;
+    ${TicketWithColumnWithTicketsFragmentDoc}`;
 export type AddTicketMutationFn = Apollo.MutationFunction<AddTicketMutation, AddTicketMutationVariables>;
 
 /**
@@ -331,8 +557,9 @@ export type UpdateTicketMutationOptions = Apollo.BaseMutationOptions<UpdateTicke
 export const DeleteTicketDocument = gql`
     mutation deleteTicket($ticketID: ID!) {
   deleteTicket(filter: {id: [$ticketID]}) {
-    msg
-    numUids
+    ticket {
+      id
+    }
   }
 }
     `;
@@ -365,11 +592,11 @@ export const AddColumnDocument = gql`
     mutation addColumn($column: AddColumnInput!) {
   addColumn(input: [$column]) {
     column {
-      ...columnDetails
+      ...columnWithProjectColumns
     }
   }
 }
-    ${ColumnDetailsFragmentDoc}`;
+    ${ColumnWithProjectColumnsFragmentDoc}`;
 export type AddColumnMutationFn = Apollo.MutationFunction<AddColumnMutation, AddColumnMutationVariables>;
 
 /**
@@ -432,3 +659,184 @@ export function useUpdateColumnMutation(baseOptions?: Apollo.MutationHookOptions
 export type UpdateColumnMutationHookResult = ReturnType<typeof useUpdateColumnMutation>;
 export type UpdateColumnMutationResult = Apollo.MutationResult<UpdateColumnMutation>;
 export type UpdateColumnMutationOptions = Apollo.BaseMutationOptions<UpdateColumnMutation, UpdateColumnMutationVariables>;
+export const SetColumnOrderDocument = gql`
+    mutation setColumnOrder($projID: ID!, $order: String!) {
+  updateProject(input: {filter: {projID: [$projID]}, set: {order: $order}}) {
+    project {
+      ...projectOrder
+    }
+  }
+}
+    ${ProjectOrderFragmentDoc}`;
+export type SetColumnOrderMutationFn = Apollo.MutationFunction<SetColumnOrderMutation, SetColumnOrderMutationVariables>;
+
+/**
+ * __useSetColumnOrderMutation__
+ *
+ * To run a mutation, you first call `useSetColumnOrderMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSetColumnOrderMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [setColumnOrderMutation, { data, loading, error }] = useSetColumnOrderMutation({
+ *   variables: {
+ *      projID: // value for 'projID'
+ *      order: // value for 'order'
+ *   },
+ * });
+ */
+export function useSetColumnOrderMutation(baseOptions?: Apollo.MutationHookOptions<SetColumnOrderMutation, SetColumnOrderMutationVariables>) {
+        return Apollo.useMutation<SetColumnOrderMutation, SetColumnOrderMutationVariables>(SetColumnOrderDocument, baseOptions);
+      }
+export type SetColumnOrderMutationHookResult = ReturnType<typeof useSetColumnOrderMutation>;
+export type SetColumnOrderMutationResult = Apollo.MutationResult<SetColumnOrderMutation>;
+export type SetColumnOrderMutationOptions = Apollo.BaseMutationOptions<SetColumnOrderMutation, SetColumnOrderMutationVariables>;
+export const DeleteColumnDocument = gql`
+    mutation deleteColumn($colID: ID!) {
+  deleteColumn(filter: {colID: [$colID]}) {
+    column {
+      colID
+    }
+  }
+}
+    `;
+export type DeleteColumnMutationFn = Apollo.MutationFunction<DeleteColumnMutation, DeleteColumnMutationVariables>;
+
+/**
+ * __useDeleteColumnMutation__
+ *
+ * To run a mutation, you first call `useDeleteColumnMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteColumnMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteColumnMutation, { data, loading, error }] = useDeleteColumnMutation({
+ *   variables: {
+ *      colID: // value for 'colID'
+ *   },
+ * });
+ */
+export function useDeleteColumnMutation(baseOptions?: Apollo.MutationHookOptions<DeleteColumnMutation, DeleteColumnMutationVariables>) {
+        return Apollo.useMutation<DeleteColumnMutation, DeleteColumnMutationVariables>(DeleteColumnDocument, baseOptions);
+      }
+export type DeleteColumnMutationHookResult = ReturnType<typeof useDeleteColumnMutation>;
+export type DeleteColumnMutationResult = Apollo.MutationResult<DeleteColumnMutation>;
+export type DeleteColumnMutationOptions = Apollo.BaseMutationOptions<DeleteColumnMutation, DeleteColumnMutationVariables>;
+export const SetTicketOrderDocument = gql`
+    mutation setTicketOrder($colID: ID!, $order: String!) {
+  updateColumn(input: {filter: {colID: [$colID]}, set: {order: $order}}) {
+    column {
+      ...columnOrder
+    }
+  }
+}
+    ${ColumnOrderFragmentDoc}`;
+export type SetTicketOrderMutationFn = Apollo.MutationFunction<SetTicketOrderMutation, SetTicketOrderMutationVariables>;
+
+/**
+ * __useSetTicketOrderMutation__
+ *
+ * To run a mutation, you first call `useSetTicketOrderMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSetTicketOrderMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [setTicketOrderMutation, { data, loading, error }] = useSetTicketOrderMutation({
+ *   variables: {
+ *      colID: // value for 'colID'
+ *      order: // value for 'order'
+ *   },
+ * });
+ */
+export function useSetTicketOrderMutation(baseOptions?: Apollo.MutationHookOptions<SetTicketOrderMutation, SetTicketOrderMutationVariables>) {
+        return Apollo.useMutation<SetTicketOrderMutation, SetTicketOrderMutationVariables>(SetTicketOrderDocument, baseOptions);
+      }
+export type SetTicketOrderMutationHookResult = ReturnType<typeof useSetTicketOrderMutation>;
+export type SetTicketOrderMutationResult = Apollo.MutationResult<SetTicketOrderMutation>;
+export type SetTicketOrderMutationOptions = Apollo.BaseMutationOptions<SetTicketOrderMutation, SetTicketOrderMutationVariables>;
+export const MoveTicketDocument = gql`
+    mutation moveTicket($id: ID!, $colID: ID!, $order: String!) {
+  updateTicket(input: {filter: {id: [$id]}, set: {onColumn: {colID: $colID}}}) {
+    ticket {
+      ...ticketWithColumn
+    }
+  }
+  updateColumn(input: {filter: {colID: [$colID]}, set: {order: $order}}) {
+    column {
+      ...columnOrder
+    }
+  }
+}
+    ${TicketWithColumnFragmentDoc}
+${ColumnOrderFragmentDoc}`;
+export type MoveTicketMutationFn = Apollo.MutationFunction<MoveTicketMutation, MoveTicketMutationVariables>;
+
+/**
+ * __useMoveTicketMutation__
+ *
+ * To run a mutation, you first call `useMoveTicketMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useMoveTicketMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [moveTicketMutation, { data, loading, error }] = useMoveTicketMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      colID: // value for 'colID'
+ *      order: // value for 'order'
+ *   },
+ * });
+ */
+export function useMoveTicketMutation(baseOptions?: Apollo.MutationHookOptions<MoveTicketMutation, MoveTicketMutationVariables>) {
+        return Apollo.useMutation<MoveTicketMutation, MoveTicketMutationVariables>(MoveTicketDocument, baseOptions);
+      }
+export type MoveTicketMutationHookResult = ReturnType<typeof useMoveTicketMutation>;
+export type MoveTicketMutationResult = Apollo.MutationResult<MoveTicketMutation>;
+export type MoveTicketMutationOptions = Apollo.BaseMutationOptions<MoveTicketMutation, MoveTicketMutationVariables>;
+export const UpdateColumnNameDocument = gql`
+    mutation updateColumnName($colID: ID!, $name: String!) {
+  updateColumn(input: {filter: {colID: [$colID]}, set: {name: $name}}) {
+    column {
+      ...columnDetails
+    }
+  }
+}
+    ${ColumnDetailsFragmentDoc}`;
+export type UpdateColumnNameMutationFn = Apollo.MutationFunction<UpdateColumnNameMutation, UpdateColumnNameMutationVariables>;
+
+/**
+ * __useUpdateColumnNameMutation__
+ *
+ * To run a mutation, you first call `useUpdateColumnNameMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateColumnNameMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateColumnNameMutation, { data, loading, error }] = useUpdateColumnNameMutation({
+ *   variables: {
+ *      colID: // value for 'colID'
+ *      name: // value for 'name'
+ *   },
+ * });
+ */
+export function useUpdateColumnNameMutation(baseOptions?: Apollo.MutationHookOptions<UpdateColumnNameMutation, UpdateColumnNameMutationVariables>) {
+        return Apollo.useMutation<UpdateColumnNameMutation, UpdateColumnNameMutationVariables>(UpdateColumnNameDocument, baseOptions);
+      }
+export type UpdateColumnNameMutationHookResult = ReturnType<typeof useUpdateColumnNameMutation>;
+export type UpdateColumnNameMutationResult = Apollo.MutationResult<UpdateColumnNameMutation>;
+export type UpdateColumnNameMutationOptions = Apollo.BaseMutationOptions<UpdateColumnNameMutation, UpdateColumnNameMutationVariables>;

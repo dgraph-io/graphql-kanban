@@ -54,3 +54,11 @@ mutation updateProjectDetails($id: ID!, $details: ProjectPatch) {
     }
   }
 }
+
+mutation deleteProject($projID: ID!) {
+  deleteProject(filter: { projID: [$projID] }) {
+    project {
+      projID
+    }
+  }
+}

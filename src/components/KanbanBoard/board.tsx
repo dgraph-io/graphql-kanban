@@ -1,4 +1,3 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Menu } from "semantic-ui-react";
@@ -7,109 +6,20 @@ import { orderColumns } from "../../utils/orderColumns";
 import { parseJSON } from "../../utils/parseJSON";
 import { Column } from "./column";
 import { NewColumn } from "./newColumn";
+import { useGetProjectQuery, useMoveTicketMutation, useSetColumnOrderMutation, useSetTicketOrderMutation } from "./types/operations";
 
 interface KanbanBoardParams {
   projID: string;
 }
 
-const GET_PROJECT = gql`
-  query GET_PROJECT($projID: ID!) {
-    getProject(projID: $projID) {
-      projID
-      name
-      url
-      description
-      admin {
-        username
-        displayName
-      }
-      roles {
-        id
-        permission
-        assignedTo {
-          username
-          displayName
-        }
-      }
-      columns {
-        colID
-        name
-        tickets {
-          id
-          title
-          description
-          orderPreference
-          assignedTo {
-            username
-            displayName
-          }
-        }
-        order
-      }
-      order
-    }
-  }
-`;
-
-const SET_COLUMN_ORDER = gql`
-  mutation SET_COLUMN_ORDER($projID: ID!, $order: String!) {
-    updateProject(
-      input: { filter: { projID: [$projID] }, set: { order: $order } }
-    ) {
-      numUids
-      project {
-        projID
-        order
-      }
-    }
-  }
-`;
-
-const SET_TICKET_ORDER = gql`
-  mutation SET_TICKET_ORDER($colID: ID!, $order: String!) {
-    updateColumn(
-      input: { filter: { colID: [$colID] }, set: { order: $order } }
-    ) {
-      numUids
-      column {
-        colID
-        order
-      }
-    }
-  }
-`;
-
-const MOVE_TICKET = gql`
-  mutation MOVE_TICKET($id: ID!, $colID: ID!, $order: String!) {
-    updateTicket(
-      input: { filter: { id: [$id] }, set: { onColumn: { colID: $colID } } }
-    ) {
-      numUids
-      ticket {
-        id
-        onColumn {
-          colID
-        }
-      }
-    }
-    updateColumn(
-      input: { filter: { colID: [$colID] }, set: { order: $order } }
-    ) {
-      numUids
-      column {
-        colID
-        order
-      }
-    }
-  }
-`;
-
 export function KanbanBoard() {
   const { projID } = useParams<KanbanBoardParams>();
-  const { data, loading, error } = useQuery(GET_PROJECT, {
-    variables: { projID },
-  });
-  const columnOrder = data?.getProject?.order;
+  const { data, loading, error } = useGetProjectQuery({
+    variables: {
+      projectID: projID
+    }
+  })
+  const columnOrder = data?.getProject?.order || '';
   const queriedOrder = useMemo<string[]>(
     () => parseJSON(columnOrder, (order) => Array.isArray(order), []),
     [columnOrder]
@@ -126,16 +36,16 @@ export function KanbanBoard() {
   const [columns, setColumns] = useState(memoizedColumns);
   useEffect(() => setColumns(memoizedColumns), [memoizedColumns]);
 
-  const [pushColumnOrder] = useMutation(SET_COLUMN_ORDER, {
+  const [pushColumnOrder] = useSetColumnOrderMutation({
     ignoreResults: true,
   });
-  const [pushTicketOrder] = useMutation(SET_TICKET_ORDER, {
+  const [pushTicketOrder] = useSetTicketOrderMutation({
     ignoreResults: true,
-  });
+  })
   // TODO: Update the cache when moving a ticket between columns instead of refetching the entire project query again
-  const [moveTicket] = useMutation(MOVE_TICKET, {
+  const [moveTicket] = useMoveTicketMutation({
     ignoreResults: true,
-    refetchQueries: ["GET_PROJECT"],
+    refetchQueries: ["getProject"]
   });
 
   const onDragEnd = ({

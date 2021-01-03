@@ -1,24 +1,7 @@
-import { gql, useMutation } from "@apollo/client";
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { Input, Button, Icon } from "semantic-ui-react";
-
-const ADD_COLUMN = gql`
-  mutation ADD_COLUMN($projID: ID!, $name: String!) {
-    addColumn(input: [{ inProject: { projID: $projID }, name: $name }]) {
-      numUids
-      column {
-        colID
-        inProject {
-          projID
-          columns {
-            colID
-          }
-        }
-      }
-    }
-  }
-`;
+import { useAddColumnMutation } from "./types/operations";
 
 interface ParamProps {
   projID: string;
@@ -28,8 +11,15 @@ export function NewColumn() {
   const { projID } = useParams<ParamProps>();
   const [active, setActive] = useState(false);
   const [name, setName] = useState("");
-  const [addColumn] = useMutation(ADD_COLUMN, {
-    variables: { projID, name },
+  const [addColumn] = useAddColumnMutation({
+    variables: {
+      column: {
+        inProject: {
+          projID,
+        },
+        name,
+      },
+    },
     ignoreResults: true,
     onCompleted: () => {
       setActive(false);

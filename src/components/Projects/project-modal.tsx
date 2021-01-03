@@ -1,28 +1,18 @@
-import { gql } from "@apollo/client";
 import { useAuth0 } from "@auth0/auth0-react";
 import React, { Fragment, useState } from "react";
 import { Header, Image, Modal, Form, Button } from "semantic-ui-react";
-import { DeleteProjectPayload, Project } from "../../types/graphql";
-import useDelete from "../../utils/useDelete";
+import { Project } from "../../types/graphql";
+import updateCacheAfterDelete from "../../utils/updateCacheAfterDelete";
 
 import {
   useGetProjectDetailsQuery,
   useAddProjectMutation,
   useUpdateProjectDetailsMutation,
   useAllUsersQuery,
+  useDeleteProjectMutation,
 } from "./types/operations";
 
 const CLAIMS = process.env.REACT_APP_AUTH0_CLAIMS_KEY as string
-
-const DELETE_PROJECT = gql`
-  mutation DELETE_PROJECT($projID: ID!) {
-    deleteProject(filter: { projID: [$projID] }) {
-      project {
-        projID
-      }
-    }
-  }
-`;
 
 export interface ProjectModalProps {
   closeModal?: () => void;
@@ -38,10 +28,9 @@ function useFormButton(project: Partial<Project>, closeModal: () => void) {
 
   const [updtProjectMutation] = useUpdateProjectDetailsMutation();
 
-  const [deleteProject] = useDelete<
-    { deleteProject: DeleteProjectPayload },
-    { projID: string }
-  >(DELETE_PROJECT);
+  const [deleteProject] = useDeleteProjectMutation({
+    update: updateCacheAfterDelete
+  })
 
   return (
     <div style={{ display: "flex", justifyContent: "space-between" }}>

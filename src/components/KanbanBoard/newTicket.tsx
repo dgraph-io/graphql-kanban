@@ -1,4 +1,3 @@
-import { gql, useMutation } from "@apollo/client";
 import React, { useState } from "react";
 import {
   Input,
@@ -8,45 +7,8 @@ import {
   Icon,
   Confirm,
 } from "semantic-ui-react";
-import { DeleteColumnPayload } from "../../types/graphql";
-import useDelete from "../../utils/useDelete";
-
-const ADD_TICKET = gql`
-  mutation ADD_TICKET($colID: ID!, $title: String!, $description: String) {
-    addTicket(
-      input: [
-        {
-          onColumn: { colID: $colID }
-          title: $title
-          description: $description
-        }
-      ]
-    ) {
-      numUids
-      ticket {
-        id
-        onColumn {
-          colID
-          tickets {
-            id
-            title
-            description
-          }
-        }
-      }
-    }
-  }
-`;
-
-const DELETE_COLUMN = gql`
-  mutation DELETE_COLUMN($colID: ID!) {
-    deleteColumn(filter: { colID: [$colID] }) {
-      column {
-        colID
-      }
-    }
-  }
-`;
+import updateCacheAfterDelete from "../../utils/updateCacheAfterDelete";
+import { useAddTicketMutation, useDeleteColumnMutation } from "./types/operations";
 
 interface NewTicketProps {
   colID: string;
@@ -60,18 +22,25 @@ export function NewTicket(props: NewTicketProps) {
   const [showDelete, setShowDelete] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [deleteColumn] = useDelete<
-    { deleteColumn: DeleteColumnPayload },
-    { colID: string }
-  >(DELETE_COLUMN);
-  const [addTicket] = useMutation(ADD_TICKET, {
-    variables: { colID, title, description },
+  const [deleteColumn] = useDeleteColumnMutation({
+    update: updateCacheAfterDelete
+  })
+  const [addTicket] = useAddTicketMutation({
+    variables: {
+      ticket: {
+        title,
+        description,
+        onColumn: {
+          colID
+        }
+      }
+    },
     ignoreResults: true,
     onCompleted: () => {
-      setActive(false);
-      setTitle("");
-      setDescription("");
-    },
+      setActive(false)
+      setTitle("")
+      setDescription("")
+    }
   });
   return (
     <>

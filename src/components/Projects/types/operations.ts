@@ -84,6 +84,22 @@ export type UpdateProjectDetailsMutation = (
   )> }
 );
 
+export type DeleteProjectMutationVariables = Types.Exact<{
+  projID: Types.Scalars['ID'];
+}>;
+
+
+export type DeleteProjectMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteProject?: Types.Maybe<(
+    { __typename?: 'DeleteProjectPayload' }
+    & { project?: Types.Maybe<Array<Types.Maybe<(
+      { __typename?: 'Project' }
+      & Pick<Types.Project, 'projID'>
+    )>>> }
+  )> }
+);
+
 export const UserNamesFragmentDoc = gql`
     fragment userNames on User {
   username
@@ -267,3 +283,37 @@ export function useUpdateProjectDetailsMutation(baseOptions?: Apollo.MutationHoo
 export type UpdateProjectDetailsMutationHookResult = ReturnType<typeof useUpdateProjectDetailsMutation>;
 export type UpdateProjectDetailsMutationResult = Apollo.MutationResult<UpdateProjectDetailsMutation>;
 export type UpdateProjectDetailsMutationOptions = Apollo.BaseMutationOptions<UpdateProjectDetailsMutation, UpdateProjectDetailsMutationVariables>;
+export const DeleteProjectDocument = gql`
+    mutation deleteProject($projID: ID!) {
+  deleteProject(filter: {projID: [$projID]}) {
+    project {
+      projID
+    }
+  }
+}
+    `;
+export type DeleteProjectMutationFn = Apollo.MutationFunction<DeleteProjectMutation, DeleteProjectMutationVariables>;
+
+/**
+ * __useDeleteProjectMutation__
+ *
+ * To run a mutation, you first call `useDeleteProjectMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteProjectMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteProjectMutation, { data, loading, error }] = useDeleteProjectMutation({
+ *   variables: {
+ *      projID: // value for 'projID'
+ *   },
+ * });
+ */
+export function useDeleteProjectMutation(baseOptions?: Apollo.MutationHookOptions<DeleteProjectMutation, DeleteProjectMutationVariables>) {
+        return Apollo.useMutation<DeleteProjectMutation, DeleteProjectMutationVariables>(DeleteProjectDocument, baseOptions);
+      }
+export type DeleteProjectMutationHookResult = ReturnType<typeof useDeleteProjectMutation>;
+export type DeleteProjectMutationResult = Apollo.MutationResult<DeleteProjectMutation>;
+export type DeleteProjectMutationOptions = Apollo.BaseMutationOptions<DeleteProjectMutation, DeleteProjectMutationVariables>;

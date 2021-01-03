@@ -1,42 +1,13 @@
-import { gql, useMutation } from "@apollo/client";
 import React, { useEffect, useState } from "react";
 import { Draggable } from "react-beautiful-dnd";
 import { Button, Card, Form, Icon, Ref } from "semantic-ui-react";
-import { DeleteTicketPayload, UpdateTicketPayload } from "../../types/graphql";
-import useDelete from "../../utils/useDelete";
+import updateCacheAfterDelete from "../../utils/updateCacheAfterDelete";
+import { useDeleteTicketMutation, useUpdateTicketMutation } from "./types/operations";
 
 interface TicketProps {
   ticket: any;
   index: number;
 }
-
-const DELETE_TICKET = gql`
-  mutation DELETE_TICKET($id: ID!) {
-    deleteTicket(filter: { id: [$id] }) {
-      ticket {
-        id
-      }
-    }
-  }
-`;
-
-const UPDATE_TICKET = gql`
-  mutation UDPATE_TICKET($id: ID!, $title: String!, $description: String!) {
-    updateTicket(
-      input: {
-        filter: { id: [$id] }
-        set: { title: $title, description: $description }
-      }
-    ) {
-      numUids
-      ticket {
-        id
-        title
-        description
-      }
-    }
-  }
-`;
 
 export function Ticket(props: TicketProps) {
   const { ticket, index } = props;
@@ -48,20 +19,18 @@ export function Ticket(props: TicketProps) {
     setDescription(ticket?.description);
   }, [ticket]);
   const [commenting, addComment] = useState(false);
-  const [deleteTicket] = useDelete<
-    { deleteTicket: DeleteTicketPayload },
-    { id: string }
-  >(DELETE_TICKET);
-  const [updateTicket] = useMutation<
-    { updateTicekt: UpdateTicketPayload },
-    { id: string; title: string; description: string }
-  >(UPDATE_TICKET);
+  const [deleteTicket] = useDeleteTicketMutation({
+    update: updateCacheAfterDelete
+  })
+  const [updateTicket] = useUpdateTicketMutation()
   const handleEditTicket = () => {
     updateTicket({
       variables: {
-        id: ticket.id,
-        title,
-        description,
+        ticketID: ticket.id,
+        ticket: {
+          title,
+          description,
+        }
       },
     });
     editTicket(false);
@@ -150,7 +119,7 @@ export function Ticket(props: TicketProps) {
                   negative
                   animated="vertical"
                   color="red"
-                  onClick={() => deleteTicket({ variables: { id: ticket.id } })}
+                  onClick={() => deleteTicket({ variables: { ticketID: ticket.id } })}
                 >
                   <Button.Content visible>
                     <Icon name="trash alternate outline" />

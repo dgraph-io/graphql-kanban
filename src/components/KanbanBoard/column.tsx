@@ -1,30 +1,14 @@
-import { gql, useMutation } from "@apollo/client";
 import React, { useEffect, useState } from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import { Button, Input } from "semantic-ui-react";
-import { UpdateColumnPayload } from "../../types/graphql";
 import { NewTicket } from "./newTicket";
 import { Ticket } from "./ticket";
+import { useUpdateColumnNameMutation } from "./types/operations";
 
 interface ColumnProps {
   column: any;
   index: number;
 }
-
-const UPDATE_COLUMN_NAME = gql`
-  mutation UPDATE_COLUMN_NAME($id: ID! $name: String!) {
-    updateColumn(input: {
-      filter: { colID: [$id] }
-      set: { name: $name }
-    }) {
-      numUids
-      column {
-        colID
-        name
-      }
-    }
-  }
-`
 
 export function Column(props: ColumnProps) {
   const { column, index } = props;
@@ -33,10 +17,7 @@ export function Column(props: ColumnProps) {
   useEffect(()=>{
     setName(column.name)
   },[column])
-  const [saveColumnName] = useMutation<
-    { updateColumn: UpdateColumnPayload },
-    { id: string, name: string }
-  >(UPDATE_COLUMN_NAME, {
+  const [saveColumnName] = useUpdateColumnNameMutation({
     onCompleted: () => editColumn(false)
   })
   return (
@@ -74,7 +55,7 @@ export function Column(props: ColumnProps) {
               <Input name='name' placeholder='Column Name' value={name} onChange={(e,{value})=>setName(value)} fluid style={{ flexGrow: '1', paddingRight: '8px' }} />
               <div style={{ display: 'flex' }}>
                 <Button onClick={()=>editColumn(false)} size='mini' color='grey' basic icon='cancel'/>
-                <Button onClick={()=>saveColumnName({ variables: { id: column.colID, name } })} size='mini' color='green' icon='save outline'/>
+                <Button onClick={()=>saveColumnName({ variables: { colID: column.colID, name } })} size='mini' color='green' icon='save outline'/>
               </div>
             </>}
           </div>
