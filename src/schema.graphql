@@ -3,13 +3,14 @@ type User {
   displayName: String
   isAdmin: Boolean
   tickets: [Ticket] @hasInverse(field: assignedTo)
+  authoredComments: [Comment] @hasInverse(field: author)
 }
 
 type Project
   @auth(
     query: {
       or: [
-        { rule: "query { queryProject { projID } }" }
+        { rule: "{$IS_ADMIN: { eq: \"true\" }}" }
         {
           rule: "query ($username: String!) { queryProject { admin(filter: {username: {eq: $username}}) { username } } }"
         }
@@ -32,13 +33,14 @@ type Project
 
 type Role {
   id: ID!
-  permission: [Permission] @search
+  permission: [Permission!]! @search
   assignedTo: [User]
 }
 
 enum Permission {
   VIEW
   EDIT
+  DELETE
 }
 
 type Column {
@@ -60,6 +62,13 @@ type Ticket {
   orderPreference: Int
     @deprecated(reason: "To order tickets inside columns use Column.order")
   assignedTo: [User!]
+  comments: [Comment] @hasInverse(field: onTicket)
+}
+
+type Comment {
+  id: ID!
+  onTicket: Ticket
+  author: User!
 }
 
 # Dgraph.Authorization {"VerificationKey":"AUTH0_PUBLIC_KEY","Header":"token","Namespace":"https://example.com/claims/graphqlkanban","Algo":"RS256","Audience":["REACT_APP_AUTH0_CLIENT_ID"]}
