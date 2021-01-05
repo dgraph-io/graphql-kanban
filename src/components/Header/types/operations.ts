@@ -1,10 +1,8 @@
 import * as Types from '../../../types/graphql';
 
-import gql from 'graphql-tag';
-import * as ApolloReactCommon from '@apollo/client';
-import * as ApolloReactHooks from '@apollo/client';
-
-export type ProjectNamesQueryVariables = {};
+import { gql } from '@apollo/client';
+import * as Apollo from '@apollo/client';
+export type ProjectNamesQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
 export type ProjectNamesQuery = (
@@ -40,12 +38,12 @@ export const ProjectNamesDocument = gql`
  *   },
  * });
  */
-export function useProjectNamesQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<ProjectNamesQuery, ProjectNamesQueryVariables>) {
-        return ApolloReactHooks.useQuery<ProjectNamesQuery, ProjectNamesQueryVariables>(ProjectNamesDocument, baseOptions);
+export function useProjectNamesQuery(baseOptions?: Apollo.QueryHookOptions<ProjectNamesQuery, ProjectNamesQueryVariables>) {
+        return Apollo.useQuery<ProjectNamesQuery, ProjectNamesQueryVariables>(ProjectNamesDocument, baseOptions);
       }
-export function useProjectNamesLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<ProjectNamesQuery, ProjectNamesQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<ProjectNamesQuery, ProjectNamesQueryVariables>(ProjectNamesDocument, baseOptions);
+export function useProjectNamesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ProjectNamesQuery, ProjectNamesQueryVariables>) {
+          return Apollo.useLazyQuery<ProjectNamesQuery, ProjectNamesQueryVariables>(ProjectNamesDocument, baseOptions);
         }
 export type ProjectNamesQueryHookResult = ReturnType<typeof useProjectNamesQuery>;
 export type ProjectNamesLazyQueryHookResult = ReturnType<typeof useProjectNamesLazyQuery>;
-export type ProjectNamesQueryResult = ApolloReactCommon.QueryResult<ProjectNamesQuery, ProjectNamesQueryVariables>;
+export type ProjectNamesQueryResult = Apollo.QueryResult<ProjectNamesQuery, ProjectNamesQueryVariables>;

@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState } from "react";
 import {
   Modal,
   Button,
@@ -8,27 +8,27 @@ import {
   Icon,
   Menu,
   Table,
-} from "semantic-ui-react"
-import ProjectModal from "./project-modal"
-import { useAllProjectsDetailsQuery } from "./types/operations"
-import { UserWithIcon } from "../User/user"
-import { Link } from "react-router-dom"
+} from "semantic-ui-react";
+import ProjectModal from "./project-modal";
+import { useAllProjectsDetailsQuery } from "./types/operations";
+import { UserWithIcon } from "../User/user";
+import { Link } from "react-router-dom";
 
 export interface ProjectProps {
-  withProjectEdits: boolean
+  withProjectEdits: boolean;
 }
 
 function Projects(props: ProjectProps) {
-  const [modalVisible, setModalVisible] = useState(false)
+  const [modalVisible, setModalVisible] = useState(false);
   const openModal = () => {
-    setModalVisible(true)
-  }
+    setModalVisible(true);
+  };
   const closeModal = () => {
-    setModalVisible(false)
-  }
+    setModalVisible(false);
+  };
 
   return (
-    <Container text style={{ marginTop: "10em" }}>
+    <Container text>
       {props.withProjectEdits && (
         <Modal
           open={modalVisible}
@@ -53,28 +53,42 @@ function Projects(props: ProjectProps) {
 
       {ProjectList(props.withProjectEdits)}
     </Container>
-  )
+  );
 }
 
 function ProjectList(withProjectEdits: boolean) {
-  const { loading, error, data } = useAllProjectsDetailsQuery()
+  const { loading, error, data } = useAllProjectsDetailsQuery();
 
-  if (loading) return <Loader />
-  if (error) return `Error! ${error.message}`
+  if (loading) return <Loader />;
+  if (error) return `Error! ${error.message}`;
 
-  const items = data?.queryProject?.map((proj) => {
-    let icon: "github" | "gitlab" | "microsoft" | "google" | "react" = "github"
-    if (proj?.url?.includes("gitlab")) {
-      icon = "gitlab"
+  const items = data?.queryProject?.map((proj: any) => {
+    let icon: "github" | "gitlab" | "bitbucket" | "trello" | "facebook" | "microsoft" | "google" | "react" | "amazon" | "aws" | "app store ios" | "columns" = "columns";
+    if (proj?.url?.includes("github")) {
+      icon = "github";
+    } else if (proj?.url?.includes("gitlab")) {
+      icon = "gitlab";
+    } else if (proj?.url?.includes("bitbucket")) {
+      icon = "bitbucket";
+    } else if (proj?.url?.includes("trello")) {
+      icon = "trello";
+    } else if (proj?.url?.includes("facebook")) {
+      icon = "facebook";
     } else if (proj?.url?.includes("microsoft")) {
-      icon = "microsoft"
+      icon = "microsoft";
     } else if (proj?.url?.includes("google")) {
-      icon = "google"
+      icon = "google";
     } else if (proj?.url?.includes("react")) {
-      icon = "react"
+      icon = "react";
+    } else if (proj?.url?.includes("amazon")) {
+      icon = "amazon";
+    } else if (proj?.url?.includes("aws")) {
+      icon = "aws";
+    } else if (proj?.url?.includes("apple")) {
+      icon = "app store ios";
     }
     return (
-      <Table.Row>
+      <Table.Row key={proj?.projID}>
         <Table.Cell>
           <Header as="h4" image>
             <a
@@ -82,7 +96,7 @@ function ProjectList(withProjectEdits: boolean) {
               target="__blank"
               style={{ color: "black" }}
             >
-              <Icon name={icon} size="large" verticalAlign="middle" />
+              <Icon name={icon} size="large" />
             </a>
             <Header.Content
               as={Link}
@@ -110,14 +124,14 @@ function ProjectList(withProjectEdits: boolean) {
           )}
         </Table.Cell>
       </Table.Row>
-    )
-  })
+    );
+  });
 
   return (
     <Table basic="very">
       <Table.Body>{items}</Table.Body>
     </Table>
-  )
+  );
 }
 
-export default Projects
+export default Projects;

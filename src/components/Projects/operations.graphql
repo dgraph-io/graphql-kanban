@@ -1,6 +1,7 @@
 fragment userNames on User {
   username
   displayName
+  image
 }
 
 fragment projectDetails on Project {
@@ -51,6 +52,14 @@ mutation updateProjectDetails($id: ID!, $details: ProjectPatch) {
   updateProject(input: { filter: { projID: [$id] }, set: $details }) {
     project {
       ...projectDetails
+    }
+  }
+}
+
+mutation deleteProject($projID: ID!) {
+  deleteProject(filter: { projID: [$projID] }) {
+    project {
+      projID
     }
   }
 }

@@ -1,11 +1,27 @@
 type User {
   username: String! @id
   displayName: String
+  image: String
   isAdmin: Boolean
   tickets: [Ticket] @hasInverse(field: assignedTo)
+  authoredComments: [Comment] @hasInverse(field: author)
 }
 
-type Project {
+type Project
+  @withSubscription
+  @auth(
+    query: {
+      or: [
+        { rule: "{$IS_ADMIN: { eq: \"true\" }}" }
+        {
+          rule: "query ($username: String!) { queryProject { admin(filter: {username: {eq: $username}}) { username } } }"
+        }
+        {
+          rule: "query ($username: String!) { queryProject { roles { assignedTo(filter: {username: {eq: $username}}) { username } } } }"
+        }
+      ]
+    }
+  ) {
   projID: ID!
   name: String! @search(by: [term])
   url: String
@@ -13,32 +29,93 @@ type Project {
   admin: User
   roles: [Role]
   columns: [Column] @hasInverse(field: inProject)
+  "A JSON array storing the order of the columns by id"
+  order: String
 }
 
 type Role {
   id: ID!
-  permission: [Permission] @search
+  permission: [Permission!]! @search
   assignedTo: [User]
 }
 
 enum Permission {
   VIEW
   EDIT
+  DELETE
 }
 
-type Column {
+type Column
+  @withSubscription
+  @auth(
+    query: {
+      or: [
+        { rule: "{$IS_ADMIN: { eq: \"true\" }}" }
+        {
+          rule: "query ($username: String!) { queryColumn { inProject { admin(filter: {username: {eq: $username}}) { username } } } }"
+        }
+        {
+          rule: "query ($username: String!) { queryColumn { inProject { roles { assignedTo(filter: {username: {eq: $username}}) { username } } } } }"
+        }
+      ]
+    }
+  ) {
   colID: ID!
   inProject: Project!
   name: String!
-  orderPreference: Int!
+  orderPreference: Int
+    @deprecated(reason: "To order columns inside projects use Project.order")
   tickets: [Ticket] @hasInverse(field: onColumn)
+  "A JSON array storing the order of the tickets by id"
+  order: String
 }
 
-type Ticket {
+type Ticket
+  @withSubscription
+  @auth(
+    query: {
+      or: [
+        { rule: "{$IS_ADMIN: { eq: \"true\" }}" }
+        {
+          rule: "query ($username: String!) { queryTicket { onColumn { inProject { admin(filter: {username: {eq: $username}}) { username } } } } }"
+        }
+        {
+          rule: "query ($username: String!) { queryTicket { onColumn { inProject { roles { assignedTo(filter: {username: {eq: $username}}) { username } } } } } }"
+        }
+      ]
+    }
+  ) {
   id: ID!
   onColumn: Column!
   title: String! @search(by: [term])
-  description: String!
-  orderPreference: Int!
-  assignedTo: [User!]
+  datetime: DateTime @search
+  description: String
+  orderPreference: Int
+    @deprecated(reason: "To order tickets inside columns use Column.order")
+  assigned: User
+  comments: [Comment] @hasInverse(field: onTicket)
 }
+
+type Comment
+  @withSubscription
+  @auth(
+    query: {
+      or: [
+        { rule: "{$IS_ADMIN: { eq: \"true\" }}" }
+        {
+          rule: "query ($username: String!) { queryComment { onTicket { onColumn { inProject { admin(filter: {username: {eq: $username}}) { username } } } } } }"
+        }
+        {
+          rule: "query ($username: String!) { queryComment { onTicket { onColumn { inProject { roles { assignedTo(filter: {username: {eq: $username}}) { username } } } } } } }"
+        }
+      ]
+    }
+  ) {
+  id: ID!
+  datetime: DateTime! @search
+  text: String!
+  onTicket: Ticket
+  author: User!
+}
+
+# Dgraph.Authorization {"VerificationKey":"AUTH0_PUBLIC_KEY","Header":"token","Namespace":"https://example.com/claims/graphqlkanban","Algo":"RS256","Audience":["REACT_APP_AUTH0_CLIENT_ID"]}

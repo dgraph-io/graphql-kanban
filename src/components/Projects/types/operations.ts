@@ -1,12 +1,10 @@
 import * as Types from '../../../types/graphql';
 
-import gql from 'graphql-tag';
-import * as ApolloReactCommon from '@apollo/client';
-import * as ApolloReactHooks from '@apollo/client';
-
+import { gql } from '@apollo/client';
+import * as Apollo from '@apollo/client';
 export type UserNamesFragment = (
   { __typename?: 'User' }
-  & Pick<Types.User, 'username' | 'displayName'>
+  & Pick<Types.User, 'username' | 'displayName' | 'image'>
 );
 
 export type ProjectDetailsFragment = (
@@ -18,7 +16,7 @@ export type ProjectDetailsFragment = (
   )> }
 );
 
-export type AllProjectsDetailsQueryVariables = {};
+export type AllProjectsDetailsQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
 export type AllProjectsDetailsQuery = (
@@ -29,9 +27,9 @@ export type AllProjectsDetailsQuery = (
   )>>> }
 );
 
-export type GetProjectDetailsQueryVariables = {
+export type GetProjectDetailsQueryVariables = Types.Exact<{
   projID: Types.Scalars['ID'];
-};
+}>;
 
 
 export type GetProjectDetailsQuery = (
@@ -42,7 +40,7 @@ export type GetProjectDetailsQuery = (
   )> }
 );
 
-export type AllUsersQueryVariables = {};
+export type AllUsersQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
 export type AllUsersQuery = (
@@ -53,9 +51,9 @@ export type AllUsersQuery = (
   )>>> }
 );
 
-export type AddProjectMutationVariables = {
+export type AddProjectMutationVariables = Types.Exact<{
   proj: Types.AddProjectInput;
-};
+}>;
 
 
 export type AddProjectMutation = (
@@ -69,10 +67,10 @@ export type AddProjectMutation = (
   )> }
 );
 
-export type UpdateProjectDetailsMutationVariables = {
+export type UpdateProjectDetailsMutationVariables = Types.Exact<{
   id: Types.Scalars['ID'];
   details?: Types.Maybe<Types.ProjectPatch>;
-};
+}>;
 
 
 export type UpdateProjectDetailsMutation = (
@@ -86,10 +84,27 @@ export type UpdateProjectDetailsMutation = (
   )> }
 );
 
+export type DeleteProjectMutationVariables = Types.Exact<{
+  projID: Types.Scalars['ID'];
+}>;
+
+
+export type DeleteProjectMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteProject?: Types.Maybe<(
+    { __typename?: 'DeleteProjectPayload' }
+    & { project?: Types.Maybe<Array<Types.Maybe<(
+      { __typename?: 'Project' }
+      & Pick<Types.Project, 'projID'>
+    )>>> }
+  )> }
+);
+
 export const UserNamesFragmentDoc = gql`
     fragment userNames on User {
   username
   displayName
+  image
 }
     `;
 export const ProjectDetailsFragmentDoc = gql`
@@ -126,15 +141,15 @@ export const AllProjectsDetailsDocument = gql`
  *   },
  * });
  */
-export function useAllProjectsDetailsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<AllProjectsDetailsQuery, AllProjectsDetailsQueryVariables>) {
-        return ApolloReactHooks.useQuery<AllProjectsDetailsQuery, AllProjectsDetailsQueryVariables>(AllProjectsDetailsDocument, baseOptions);
+export function useAllProjectsDetailsQuery(baseOptions?: Apollo.QueryHookOptions<AllProjectsDetailsQuery, AllProjectsDetailsQueryVariables>) {
+        return Apollo.useQuery<AllProjectsDetailsQuery, AllProjectsDetailsQueryVariables>(AllProjectsDetailsDocument, baseOptions);
       }
-export function useAllProjectsDetailsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<AllProjectsDetailsQuery, AllProjectsDetailsQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<AllProjectsDetailsQuery, AllProjectsDetailsQueryVariables>(AllProjectsDetailsDocument, baseOptions);
+export function useAllProjectsDetailsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AllProjectsDetailsQuery, AllProjectsDetailsQueryVariables>) {
+          return Apollo.useLazyQuery<AllProjectsDetailsQuery, AllProjectsDetailsQueryVariables>(AllProjectsDetailsDocument, baseOptions);
         }
 export type AllProjectsDetailsQueryHookResult = ReturnType<typeof useAllProjectsDetailsQuery>;
 export type AllProjectsDetailsLazyQueryHookResult = ReturnType<typeof useAllProjectsDetailsLazyQuery>;
-export type AllProjectsDetailsQueryResult = ApolloReactCommon.QueryResult<AllProjectsDetailsQuery, AllProjectsDetailsQueryVariables>;
+export type AllProjectsDetailsQueryResult = Apollo.QueryResult<AllProjectsDetailsQuery, AllProjectsDetailsQueryVariables>;
 export const GetProjectDetailsDocument = gql`
     query getProjectDetails($projID: ID!) {
   getProject(projID: $projID) {
@@ -159,15 +174,15 @@ export const GetProjectDetailsDocument = gql`
  *   },
  * });
  */
-export function useGetProjectDetailsQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<GetProjectDetailsQuery, GetProjectDetailsQueryVariables>) {
-        return ApolloReactHooks.useQuery<GetProjectDetailsQuery, GetProjectDetailsQueryVariables>(GetProjectDetailsDocument, baseOptions);
+export function useGetProjectDetailsQuery(baseOptions: Apollo.QueryHookOptions<GetProjectDetailsQuery, GetProjectDetailsQueryVariables>) {
+        return Apollo.useQuery<GetProjectDetailsQuery, GetProjectDetailsQueryVariables>(GetProjectDetailsDocument, baseOptions);
       }
-export function useGetProjectDetailsLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetProjectDetailsQuery, GetProjectDetailsQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<GetProjectDetailsQuery, GetProjectDetailsQueryVariables>(GetProjectDetailsDocument, baseOptions);
+export function useGetProjectDetailsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetProjectDetailsQuery, GetProjectDetailsQueryVariables>) {
+          return Apollo.useLazyQuery<GetProjectDetailsQuery, GetProjectDetailsQueryVariables>(GetProjectDetailsDocument, baseOptions);
         }
 export type GetProjectDetailsQueryHookResult = ReturnType<typeof useGetProjectDetailsQuery>;
 export type GetProjectDetailsLazyQueryHookResult = ReturnType<typeof useGetProjectDetailsLazyQuery>;
-export type GetProjectDetailsQueryResult = ApolloReactCommon.QueryResult<GetProjectDetailsQuery, GetProjectDetailsQueryVariables>;
+export type GetProjectDetailsQueryResult = Apollo.QueryResult<GetProjectDetailsQuery, GetProjectDetailsQueryVariables>;
 export const AllUsersDocument = gql`
     query allUsers {
   queryUser(order: {desc: displayName}) {
@@ -191,15 +206,15 @@ export const AllUsersDocument = gql`
  *   },
  * });
  */
-export function useAllUsersQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<AllUsersQuery, AllUsersQueryVariables>) {
-        return ApolloReactHooks.useQuery<AllUsersQuery, AllUsersQueryVariables>(AllUsersDocument, baseOptions);
+export function useAllUsersQuery(baseOptions?: Apollo.QueryHookOptions<AllUsersQuery, AllUsersQueryVariables>) {
+        return Apollo.useQuery<AllUsersQuery, AllUsersQueryVariables>(AllUsersDocument, baseOptions);
       }
-export function useAllUsersLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<AllUsersQuery, AllUsersQueryVariables>) {
-          return ApolloReactHooks.useLazyQuery<AllUsersQuery, AllUsersQueryVariables>(AllUsersDocument, baseOptions);
+export function useAllUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AllUsersQuery, AllUsersQueryVariables>) {
+          return Apollo.useLazyQuery<AllUsersQuery, AllUsersQueryVariables>(AllUsersDocument, baseOptions);
         }
 export type AllUsersQueryHookResult = ReturnType<typeof useAllUsersQuery>;
 export type AllUsersLazyQueryHookResult = ReturnType<typeof useAllUsersLazyQuery>;
-export type AllUsersQueryResult = ApolloReactCommon.QueryResult<AllUsersQuery, AllUsersQueryVariables>;
+export type AllUsersQueryResult = Apollo.QueryResult<AllUsersQuery, AllUsersQueryVariables>;
 export const AddProjectDocument = gql`
     mutation addProject($proj: AddProjectInput!) {
   addProject(input: [$proj]) {
@@ -209,7 +224,7 @@ export const AddProjectDocument = gql`
   }
 }
     ${ProjectDetailsFragmentDoc}`;
-export type AddProjectMutationFn = ApolloReactCommon.MutationFunction<AddProjectMutation, AddProjectMutationVariables>;
+export type AddProjectMutationFn = Apollo.MutationFunction<AddProjectMutation, AddProjectMutationVariables>;
 
 /**
  * __useAddProjectMutation__
@@ -228,12 +243,12 @@ export type AddProjectMutationFn = ApolloReactCommon.MutationFunction<AddProject
  *   },
  * });
  */
-export function useAddProjectMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<AddProjectMutation, AddProjectMutationVariables>) {
-        return ApolloReactHooks.useMutation<AddProjectMutation, AddProjectMutationVariables>(AddProjectDocument, baseOptions);
+export function useAddProjectMutation(baseOptions?: Apollo.MutationHookOptions<AddProjectMutation, AddProjectMutationVariables>) {
+        return Apollo.useMutation<AddProjectMutation, AddProjectMutationVariables>(AddProjectDocument, baseOptions);
       }
 export type AddProjectMutationHookResult = ReturnType<typeof useAddProjectMutation>;
-export type AddProjectMutationResult = ApolloReactCommon.MutationResult<AddProjectMutation>;
-export type AddProjectMutationOptions = ApolloReactCommon.BaseMutationOptions<AddProjectMutation, AddProjectMutationVariables>;
+export type AddProjectMutationResult = Apollo.MutationResult<AddProjectMutation>;
+export type AddProjectMutationOptions = Apollo.BaseMutationOptions<AddProjectMutation, AddProjectMutationVariables>;
 export const UpdateProjectDetailsDocument = gql`
     mutation updateProjectDetails($id: ID!, $details: ProjectPatch) {
   updateProject(input: {filter: {projID: [$id]}, set: $details}) {
@@ -243,7 +258,7 @@ export const UpdateProjectDetailsDocument = gql`
   }
 }
     ${ProjectDetailsFragmentDoc}`;
-export type UpdateProjectDetailsMutationFn = ApolloReactCommon.MutationFunction<UpdateProjectDetailsMutation, UpdateProjectDetailsMutationVariables>;
+export type UpdateProjectDetailsMutationFn = Apollo.MutationFunction<UpdateProjectDetailsMutation, UpdateProjectDetailsMutationVariables>;
 
 /**
  * __useUpdateProjectDetailsMutation__
@@ -263,9 +278,43 @@ export type UpdateProjectDetailsMutationFn = ApolloReactCommon.MutationFunction<
  *   },
  * });
  */
-export function useUpdateProjectDetailsMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<UpdateProjectDetailsMutation, UpdateProjectDetailsMutationVariables>) {
-        return ApolloReactHooks.useMutation<UpdateProjectDetailsMutation, UpdateProjectDetailsMutationVariables>(UpdateProjectDetailsDocument, baseOptions);
+export function useUpdateProjectDetailsMutation(baseOptions?: Apollo.MutationHookOptions<UpdateProjectDetailsMutation, UpdateProjectDetailsMutationVariables>) {
+        return Apollo.useMutation<UpdateProjectDetailsMutation, UpdateProjectDetailsMutationVariables>(UpdateProjectDetailsDocument, baseOptions);
       }
 export type UpdateProjectDetailsMutationHookResult = ReturnType<typeof useUpdateProjectDetailsMutation>;
-export type UpdateProjectDetailsMutationResult = ApolloReactCommon.MutationResult<UpdateProjectDetailsMutation>;
-export type UpdateProjectDetailsMutationOptions = ApolloReactCommon.BaseMutationOptions<UpdateProjectDetailsMutation, UpdateProjectDetailsMutationVariables>;
+export type UpdateProjectDetailsMutationResult = Apollo.MutationResult<UpdateProjectDetailsMutation>;
+export type UpdateProjectDetailsMutationOptions = Apollo.BaseMutationOptions<UpdateProjectDetailsMutation, UpdateProjectDetailsMutationVariables>;
+export const DeleteProjectDocument = gql`
+    mutation deleteProject($projID: ID!) {
+  deleteProject(filter: {projID: [$projID]}) {
+    project {
+      projID
+    }
+  }
+}
+    `;
+export type DeleteProjectMutationFn = Apollo.MutationFunction<DeleteProjectMutation, DeleteProjectMutationVariables>;
+
+/**
+ * __useDeleteProjectMutation__
+ *
+ * To run a mutation, you first call `useDeleteProjectMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteProjectMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteProjectMutation, { data, loading, error }] = useDeleteProjectMutation({
+ *   variables: {
+ *      projID: // value for 'projID'
+ *   },
+ * });
+ */
+export function useDeleteProjectMutation(baseOptions?: Apollo.MutationHookOptions<DeleteProjectMutation, DeleteProjectMutationVariables>) {
+        return Apollo.useMutation<DeleteProjectMutation, DeleteProjectMutationVariables>(DeleteProjectDocument, baseOptions);
+      }
+export type DeleteProjectMutationHookResult = ReturnType<typeof useDeleteProjectMutation>;
+export type DeleteProjectMutationResult = Apollo.MutationResult<DeleteProjectMutation>;
+export type DeleteProjectMutationOptions = Apollo.BaseMutationOptions<DeleteProjectMutation, DeleteProjectMutationVariables>;

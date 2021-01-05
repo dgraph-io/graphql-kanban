@@ -1,12 +1,10 @@
 import * as Types from '../../types/graphql';
 
-import gql from 'graphql-tag';
-import * as ApolloReactCommon from '@apollo/client';
-import * as ApolloReactHooks from '@apollo/client';
-
-export type AddProjectsMutationVariables = {
+import { gql } from '@apollo/client';
+import * as Apollo from '@apollo/client';
+export type AddProjectsMutationVariables = Types.Exact<{
   projects: Array<Types.AddProjectInput>;
-};
+}>;
 
 
 export type AddProjectsMutation = (
@@ -21,9 +19,9 @@ export type AddProjectsMutation = (
   )> }
 );
 
-export type AddUsersMutationVariables = {
+export type AddUsersMutationVariables = Types.Exact<{
   users: Array<Types.AddUserInput>;
-};
+}>;
 
 
 export type AddUsersMutation = (
@@ -50,7 +48,7 @@ export const AddProjectsDocument = gql`
   }
 }
     `;
-export type AddProjectsMutationFn = ApolloReactCommon.MutationFunction<AddProjectsMutation, AddProjectsMutationVariables>;
+export type AddProjectsMutationFn = Apollo.MutationFunction<AddProjectsMutation, AddProjectsMutationVariables>;
 
 /**
  * __useAddProjectsMutation__
@@ -69,12 +67,12 @@ export type AddProjectsMutationFn = ApolloReactCommon.MutationFunction<AddProjec
  *   },
  * });
  */
-export function useAddProjectsMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<AddProjectsMutation, AddProjectsMutationVariables>) {
-        return ApolloReactHooks.useMutation<AddProjectsMutation, AddProjectsMutationVariables>(AddProjectsDocument, baseOptions);
+export function useAddProjectsMutation(baseOptions?: Apollo.MutationHookOptions<AddProjectsMutation, AddProjectsMutationVariables>) {
+        return Apollo.useMutation<AddProjectsMutation, AddProjectsMutationVariables>(AddProjectsDocument, baseOptions);
       }
 export type AddProjectsMutationHookResult = ReturnType<typeof useAddProjectsMutation>;
-export type AddProjectsMutationResult = ApolloReactCommon.MutationResult<AddProjectsMutation>;
-export type AddProjectsMutationOptions = ApolloReactCommon.BaseMutationOptions<AddProjectsMutation, AddProjectsMutationVariables>;
+export type AddProjectsMutationResult = Apollo.MutationResult<AddProjectsMutation>;
+export type AddProjectsMutationOptions = Apollo.BaseMutationOptions<AddProjectsMutation, AddProjectsMutationVariables>;
 export const AddUsersDocument = gql`
     mutation addUsers($users: [AddUserInput!]!) {
   addUser(input: $users) {
@@ -86,7 +84,7 @@ export const AddUsersDocument = gql`
   }
 }
     `;
-export type AddUsersMutationFn = ApolloReactCommon.MutationFunction<AddUsersMutation, AddUsersMutationVariables>;
+export type AddUsersMutationFn = Apollo.MutationFunction<AddUsersMutation, AddUsersMutationVariables>;
 
 /**
  * __useAddUsersMutation__
@@ -105,9 +103,9 @@ export type AddUsersMutationFn = ApolloReactCommon.MutationFunction<AddUsersMuta
  *   },
  * });
  */
-export function useAddUsersMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<AddUsersMutation, AddUsersMutationVariables>) {
-        return ApolloReactHooks.useMutation<AddUsersMutation, AddUsersMutationVariables>(AddUsersDocument, baseOptions);
+export function useAddUsersMutation(baseOptions?: Apollo.MutationHookOptions<AddUsersMutation, AddUsersMutationVariables>) {
+        return Apollo.useMutation<AddUsersMutation, AddUsersMutationVariables>(AddUsersDocument, baseOptions);
       }
 export type AddUsersMutationHookResult = ReturnType<typeof useAddUsersMutation>;
-export type AddUsersMutationResult = ApolloReactCommon.MutationResult<AddUsersMutation>;
-export type AddUsersMutationOptions = ApolloReactCommon.BaseMutationOptions<AddUsersMutation, AddUsersMutationVariables>;
+export type AddUsersMutationResult = Apollo.MutationResult<AddUsersMutation>;
+export type AddUsersMutationOptions = Apollo.BaseMutationOptions<AddUsersMutation, AddUsersMutationVariables>;
