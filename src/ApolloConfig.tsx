@@ -14,7 +14,6 @@ function createApolloClient(
     | ((options?: GetIdTokenClaimsOptions | undefined) => Promise<IdToken>)
     | null
 ) {
-  console.log(process.env, process.env.REACT_APP_AUTH0_DOMAIN)
   const GRAPHQL_ENDPOINT = process.env.REACT_APP_DGRAPH_BACKEND;
 
   const inMemoryCacheConfig: InMemoryCacheConfig = {
