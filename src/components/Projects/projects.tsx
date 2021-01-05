@@ -13,6 +13,7 @@ import ProjectModal from "./project-modal";
 import { useAllProjectsDetailsQuery } from "./types/operations";
 import { UserWithIcon } from "../User/user";
 import { Link } from "react-router-dom";
+import { Project } from "../../types/graphql";
 
 export interface ProjectProps {
   withProjectEdits: boolean;
@@ -62,16 +63,30 @@ function ProjectList(withProjectEdits: boolean) {
   if (loading) return <Loader />;
   if (error) return `Error! ${error.message}`;
 
-  const items = data?.queryProject?.map((proj) => {
-    let icon: "github" | "gitlab" | "microsoft" | "google" | "react" = "github";
-    if (proj?.url?.includes("gitlab")) {
+  const items = data?.queryProject?.map((proj: Project) => {
+    let icon: "github" | "gitlab" | "bitbucket" | "trello" | "facebook" | "microsoft" | "google" | "react" | "amazon" | "aws" | "app store ios" | "columns" = "columns";
+    if (proj?.url?.includes("github")) {
+      icon = "github";
+    } else if (proj?.url?.includes("gitlab")) {
       icon = "gitlab";
+    } else if (proj?.url?.includes("bitbucket")) {
+      icon = "bitbucket";
+    } else if (proj?.url?.includes("trello")) {
+      icon = "trello";
+    } else if (proj?.url?.includes("facebook")) {
+      icon = "facebook";
     } else if (proj?.url?.includes("microsoft")) {
       icon = "microsoft";
     } else if (proj?.url?.includes("google")) {
       icon = "google";
     } else if (proj?.url?.includes("react")) {
       icon = "react";
+    } else if (proj?.url?.includes("amazon")) {
+      icon = "amazon";
+    } else if (proj?.url?.includes("aws")) {
+      icon = "aws";
+    } else if (proj?.url?.includes("apple")) {
+      icon = "app store ios";
     }
     return (
       <Table.Row key={proj?.projID}>
