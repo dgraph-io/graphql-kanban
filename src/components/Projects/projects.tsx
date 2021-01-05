@@ -13,7 +13,6 @@ import ProjectModal from "./project-modal";
 import { useAllProjectsDetailsQuery } from "./types/operations";
 import { UserWithIcon } from "../User/user";
 import { Link } from "react-router-dom";
-import { Project } from "../../types/graphql";
 
 export interface ProjectProps {
   withProjectEdits: boolean;
@@ -63,7 +62,7 @@ function ProjectList(withProjectEdits: boolean) {
   if (loading) return <Loader />;
   if (error) return `Error! ${error.message}`;
 
-  const items = data?.queryProject?.map((proj: Project) => {
+  const items = data?.queryProject?.map((proj: any) => {
     let icon: "github" | "gitlab" | "bitbucket" | "trello" | "facebook" | "microsoft" | "google" | "react" | "amazon" | "aws" | "app store ios" | "columns" = "columns";
     if (proj?.url?.includes("github")) {
       icon = "github";
