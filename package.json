@@ -15,6 +15,7 @@
     "cross-fetch": "^3.0.6",
     "graphql": "^15.4.0",
     "history": "^5.0.0",
+    "markdown-to-jsx": "^7.1.0",
     "node-fetch": "^2.6.1",
     "react": "^16.14.0",
     "react-beautiful-dnd": "^13.0.0",
