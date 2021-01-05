@@ -37,7 +37,7 @@ fragment columnWithTickets on Column {
   colID
   name
   tickets {
-    ...ticketDetails
+    ...ticketDetailsWithComments
   }
   order
 }
@@ -53,14 +53,27 @@ fragment columnWithProjectColumns on Column {
 fragment userNames on User {
   username
   displayName
+  image
 }
 
 fragment ticketDetails on Ticket {
   id
   title
   description
-  assignedTo {
+  assigned {
     ...userNames
+  }
+}
+
+fragment ticketDetailsWithComments on Ticket {
+  id
+  title
+  description
+  assigned {
+    ...userNames
+  }
+  comments(order: { desc: datetime }) {
+    ...commentDetails
   }
 }
 
@@ -82,6 +95,15 @@ fragment roleDetails on Role {
   id
   permission
   assignedTo {
+    ...userNames
+  }
+}
+
+fragment commentDetails on Comment {
+  id
+  text
+  datetime
+  author {
     ...userNames
   }
 }
@@ -123,8 +145,8 @@ mutation addTicket($ticket: AddTicketInput!) {
   }
 }
 
-mutation updateTicket($ticketID: ID!, $ticket: TicketPatch) {
-  updateTicket(input: { filter: { id: [$ticketID] }, set: $ticket }) {
+mutation updateTicket($ticketID: ID!, $ticket: TicketPatch, $remove: TicketPatch) {
+  updateTicket(input: { filter: { id: [$ticketID] }, set: $ticket, remove: $remove }) {
     ticket {
       ...ticketWithColumn
     }
@@ -222,6 +244,39 @@ mutation updateColumnName($colID: ID!, $name: String!) {
   ) {
     column {
       ...columnDetails
+    }
+  }
+}
+
+mutation addComment($comment: AddCommentInput!) {
+  addComment(input: [$comment]) {
+    comment {
+      id
+      onTicket {
+        id
+        comments(order: {desc: datetime}) {
+          ...commentDetails
+        }
+      }
+    }
+  }
+}
+
+mutation updateComment($commentID: ID! $commentPatch: CommentPatch!) {
+  updateComment(input: {
+    filter: { id: [$commentID] }
+    set: $commentPatch
+  }) {
+    comment {
+      ...commentDetails
+    }
+  }
+}
+
+mutation deleteComment($commentID: ID!) {
+  deleteComment(filter: { id: [$commentID] }) {
+    comment {
+      id
     }
   }
 }

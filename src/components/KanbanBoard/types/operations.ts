@@ -41,7 +41,7 @@ export type ColumnWithTicketsFragment = (
   & Pick<Types.Column, 'colID' | 'name' | 'order'>
   & { tickets?: Types.Maybe<Array<Types.Maybe<(
     { __typename?: 'Ticket' }
-    & TicketDetailsFragment
+    & TicketDetailsWithCommentsFragment
   )>>> }
 );
 
@@ -56,16 +56,28 @@ export type ColumnWithProjectColumnsFragment = (
 
 export type UserNamesFragment = (
   { __typename?: 'User' }
-  & Pick<Types.User, 'username' | 'displayName'>
+  & Pick<Types.User, 'username' | 'displayName' | 'image'>
 );
 
 export type TicketDetailsFragment = (
   { __typename?: 'Ticket' }
   & Pick<Types.Ticket, 'id' | 'title' | 'description'>
-  & { assignedTo?: Types.Maybe<Array<(
+  & { assigned?: Types.Maybe<(
     { __typename?: 'User' }
     & UserNamesFragment
-  )>> }
+  )> }
+);
+
+export type TicketDetailsWithCommentsFragment = (
+  { __typename?: 'Ticket' }
+  & Pick<Types.Ticket, 'id' | 'title' | 'description'>
+  & { assigned?: Types.Maybe<(
+    { __typename?: 'User' }
+    & UserNamesFragment
+  )>, comments?: Types.Maybe<Array<Types.Maybe<(
+    { __typename?: 'Comment' }
+    & CommentDetailsFragment
+  )>>> }
 );
 
 export type TicketWithColumnFragment = (
@@ -93,6 +105,15 @@ export type RoleDetailsFragment = (
     { __typename?: 'User' }
     & UserNamesFragment
   )>>> }
+);
+
+export type CommentDetailsFragment = (
+  { __typename?: 'Comment' }
+  & Pick<Types.Comment, 'id' | 'text' | 'datetime'>
+  & { author: (
+    { __typename?: 'User' }
+    & UserNamesFragment
+  ) }
 );
 
 export type GetProjectQueryVariables = Types.Exact<{
@@ -150,6 +171,7 @@ export type AddTicketMutation = (
 export type UpdateTicketMutationVariables = Types.Exact<{
   ticketID: Types.Scalars['ID'];
   ticket?: Types.Maybe<Types.TicketPatch>;
+  remove?: Types.Maybe<Types.TicketPatch>;
 }>;
 
 
@@ -304,6 +326,63 @@ export type UpdateColumnNameMutation = (
   )> }
 );
 
+export type AddCommentMutationVariables = Types.Exact<{
+  comment: Types.AddCommentInput;
+}>;
+
+
+export type AddCommentMutation = (
+  { __typename?: 'Mutation' }
+  & { addComment?: Types.Maybe<(
+    { __typename?: 'AddCommentPayload' }
+    & { comment?: Types.Maybe<Array<Types.Maybe<(
+      { __typename?: 'Comment' }
+      & Pick<Types.Comment, 'id'>
+      & { onTicket?: Types.Maybe<(
+        { __typename?: 'Ticket' }
+        & Pick<Types.Ticket, 'id'>
+        & { comments?: Types.Maybe<Array<Types.Maybe<(
+          { __typename?: 'Comment' }
+          & CommentDetailsFragment
+        )>>> }
+      )> }
+    )>>> }
+  )> }
+);
+
+export type UpdateCommentMutationVariables = Types.Exact<{
+  commentID: Types.Scalars['ID'];
+  commentPatch: Types.CommentPatch;
+}>;
+
+
+export type UpdateCommentMutation = (
+  { __typename?: 'Mutation' }
+  & { updateComment?: Types.Maybe<(
+    { __typename?: 'UpdateCommentPayload' }
+    & { comment?: Types.Maybe<Array<Types.Maybe<(
+      { __typename?: 'Comment' }
+      & CommentDetailsFragment
+    )>>> }
+  )> }
+);
+
+export type DeleteCommentMutationVariables = Types.Exact<{
+  commentID: Types.Scalars['ID'];
+}>;
+
+
+export type DeleteCommentMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteComment?: Types.Maybe<(
+    { __typename?: 'DeleteCommentPayload' }
+    & { comment?: Types.Maybe<Array<Types.Maybe<(
+      { __typename?: 'Comment' }
+      & Pick<Types.Comment, 'id'>
+    )>>> }
+  )> }
+);
+
 export const ProjectNameFragmentDoc = gql`
     fragment projectName on Project {
   projID
@@ -352,6 +431,7 @@ export const UserNamesFragmentDoc = gql`
     fragment userNames on User {
   username
   displayName
+  image
 }
     `;
 export const TicketDetailsFragmentDoc = gql`
@@ -359,7 +439,7 @@ export const TicketDetailsFragmentDoc = gql`
   id
   title
   description
-  assignedTo {
+  assigned {
     ...userNames
   }
 }
@@ -379,16 +459,40 @@ export const TicketWithColumnFragmentDoc = gql`
 }
     ${TicketDetailsFragmentDoc}
 ${ColumnDetailsFragmentDoc}`;
+export const CommentDetailsFragmentDoc = gql`
+    fragment commentDetails on Comment {
+  id
+  text
+  datetime
+  author {
+    ...userNames
+  }
+}
+    ${UserNamesFragmentDoc}`;
+export const TicketDetailsWithCommentsFragmentDoc = gql`
+    fragment ticketDetailsWithComments on Ticket {
+  id
+  title
+  description
+  assigned {
+    ...userNames
+  }
+  comments(order: {desc: datetime}) {
+    ...commentDetails
+  }
+}
+    ${UserNamesFragmentDoc}
+${CommentDetailsFragmentDoc}`;
 export const ColumnWithTicketsFragmentDoc = gql`
     fragment columnWithTickets on Column {
   colID
   name
   tickets {
-    ...ticketDetails
+    ...ticketDetailsWithComments
   }
   order
 }
-    ${TicketDetailsFragmentDoc}`;
+    ${TicketDetailsWithCommentsFragmentDoc}`;
 export const TicketWithColumnWithTicketsFragmentDoc = gql`
     fragment ticketWithColumnWithTickets on Ticket {
   ...ticketDetails
@@ -520,8 +624,8 @@ export type AddTicketMutationHookResult = ReturnType<typeof useAddTicketMutation
 export type AddTicketMutationResult = Apollo.MutationResult<AddTicketMutation>;
 export type AddTicketMutationOptions = Apollo.BaseMutationOptions<AddTicketMutation, AddTicketMutationVariables>;
 export const UpdateTicketDocument = gql`
-    mutation updateTicket($ticketID: ID!, $ticket: TicketPatch) {
-  updateTicket(input: {filter: {id: [$ticketID]}, set: $ticket}) {
+    mutation updateTicket($ticketID: ID!, $ticket: TicketPatch, $remove: TicketPatch) {
+  updateTicket(input: {filter: {id: [$ticketID]}, set: $ticket, remove: $remove}) {
     ticket {
       ...ticketWithColumn
     }
@@ -545,6 +649,7 @@ export type UpdateTicketMutationFn = Apollo.MutationFunction<UpdateTicketMutatio
  *   variables: {
  *      ticketID: // value for 'ticketID'
  *      ticket: // value for 'ticket'
+ *      remove: // value for 'remove'
  *   },
  * });
  */
@@ -840,3 +945,112 @@ export function useUpdateColumnNameMutation(baseOptions?: Apollo.MutationHookOpt
 export type UpdateColumnNameMutationHookResult = ReturnType<typeof useUpdateColumnNameMutation>;
 export type UpdateColumnNameMutationResult = Apollo.MutationResult<UpdateColumnNameMutation>;
 export type UpdateColumnNameMutationOptions = Apollo.BaseMutationOptions<UpdateColumnNameMutation, UpdateColumnNameMutationVariables>;
+export const AddCommentDocument = gql`
+    mutation addComment($comment: AddCommentInput!) {
+  addComment(input: [$comment]) {
+    comment {
+      id
+      onTicket {
+        id
+        comments(order: {desc: datetime}) {
+          ...commentDetails
+        }
+      }
+    }
+  }
+}
+    ${CommentDetailsFragmentDoc}`;
+export type AddCommentMutationFn = Apollo.MutationFunction<AddCommentMutation, AddCommentMutationVariables>;
+
+/**
+ * __useAddCommentMutation__
+ *
+ * To run a mutation, you first call `useAddCommentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddCommentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addCommentMutation, { data, loading, error }] = useAddCommentMutation({
+ *   variables: {
+ *      comment: // value for 'comment'
+ *   },
+ * });
+ */
+export function useAddCommentMutation(baseOptions?: Apollo.MutationHookOptions<AddCommentMutation, AddCommentMutationVariables>) {
+        return Apollo.useMutation<AddCommentMutation, AddCommentMutationVariables>(AddCommentDocument, baseOptions);
+      }
+export type AddCommentMutationHookResult = ReturnType<typeof useAddCommentMutation>;
+export type AddCommentMutationResult = Apollo.MutationResult<AddCommentMutation>;
+export type AddCommentMutationOptions = Apollo.BaseMutationOptions<AddCommentMutation, AddCommentMutationVariables>;
+export const UpdateCommentDocument = gql`
+    mutation updateComment($commentID: ID!, $commentPatch: CommentPatch!) {
+  updateComment(input: {filter: {id: [$commentID]}, set: $commentPatch}) {
+    comment {
+      ...commentDetails
+    }
+  }
+}
+    ${CommentDetailsFragmentDoc}`;
+export type UpdateCommentMutationFn = Apollo.MutationFunction<UpdateCommentMutation, UpdateCommentMutationVariables>;
+
+/**
+ * __useUpdateCommentMutation__
+ *
+ * To run a mutation, you first call `useUpdateCommentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateCommentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateCommentMutation, { data, loading, error }] = useUpdateCommentMutation({
+ *   variables: {
+ *      commentID: // value for 'commentID'
+ *      commentPatch: // value for 'commentPatch'
+ *   },
+ * });
+ */
+export function useUpdateCommentMutation(baseOptions?: Apollo.MutationHookOptions<UpdateCommentMutation, UpdateCommentMutationVariables>) {
+        return Apollo.useMutation<UpdateCommentMutation, UpdateCommentMutationVariables>(UpdateCommentDocument, baseOptions);
+      }
+export type UpdateCommentMutationHookResult = ReturnType<typeof useUpdateCommentMutation>;
+export type UpdateCommentMutationResult = Apollo.MutationResult<UpdateCommentMutation>;
+export type UpdateCommentMutationOptions = Apollo.BaseMutationOptions<UpdateCommentMutation, UpdateCommentMutationVariables>;
+export const DeleteCommentDocument = gql`
+    mutation deleteComment($commentID: ID!) {
+  deleteComment(filter: {id: [$commentID]}) {
+    comment {
+      id
+    }
+  }
+}
+    `;
+export type DeleteCommentMutationFn = Apollo.MutationFunction<DeleteCommentMutation, DeleteCommentMutationVariables>;
+
+/**
+ * __useDeleteCommentMutation__
+ *
+ * To run a mutation, you first call `useDeleteCommentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteCommentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteCommentMutation, { data, loading, error }] = useDeleteCommentMutation({
+ *   variables: {
+ *      commentID: // value for 'commentID'
+ *   },
+ * });
+ */
+export function useDeleteCommentMutation(baseOptions?: Apollo.MutationHookOptions<DeleteCommentMutation, DeleteCommentMutationVariables>) {
+        return Apollo.useMutation<DeleteCommentMutation, DeleteCommentMutationVariables>(DeleteCommentDocument, baseOptions);
+      }
+export type DeleteCommentMutationHookResult = ReturnType<typeof useDeleteCommentMutation>;
+export type DeleteCommentMutationResult = Apollo.MutationResult<DeleteCommentMutation>;
+export type DeleteCommentMutationOptions = Apollo.BaseMutationOptions<DeleteCommentMutation, DeleteCommentMutationVariables>;

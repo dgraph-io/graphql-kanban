@@ -1,12 +1,14 @@
 type User {
   username: String! @id
   displayName: String
+  image: String
   isAdmin: Boolean
   tickets: [Ticket] @hasInverse(field: assignedTo)
   authoredComments: [Comment] @hasInverse(field: author)
 }
 
 type Project
+  @withSubscription
   @auth(
     query: {
       or: [
@@ -43,7 +45,21 @@ enum Permission {
   DELETE
 }
 
-type Column {
+type Column
+  @withSubscription
+  @auth(
+    query: {
+      or: [
+        { rule: "{$IS_ADMIN: { eq: \"true\" }}" }
+        {
+          rule: "query ($username: String!) { queryColumn { inProject { admin(filter: {username: {eq: $username}}) { username } } } }"
+        }
+        {
+          rule: "query ($username: String!) { queryColumn { inProject { roles { assignedTo(filter: {username: {eq: $username}}) { username } } } } }"
+        }
+      ]
+    }
+  ) {
   colID: ID!
   inProject: Project!
   name: String!
@@ -54,19 +70,50 @@ type Column {
   order: String
 }
 
-type Ticket {
+type Ticket
+  @withSubscription
+  @auth(
+    query: {
+      or: [
+        { rule: "{$IS_ADMIN: { eq: \"true\" }}" }
+        {
+          rule: "query ($username: String!) { queryTicket { onColumn { inProject { admin(filter: {username: {eq: $username}}) { username } } } } }"
+        }
+        {
+          rule: "query ($username: String!) { queryTicket { onColumn { inProject { roles { assignedTo(filter: {username: {eq: $username}}) { username } } } } } }"
+        }
+      ]
+    }
+  ) {
   id: ID!
   onColumn: Column!
   title: String! @search(by: [term])
+  datetime: DateTime @search
   description: String
   orderPreference: Int
     @deprecated(reason: "To order tickets inside columns use Column.order")
-  assignedTo: [User!]
+  assigned: User
   comments: [Comment] @hasInverse(field: onTicket)
 }
 
-type Comment {
+type Comment
+  @withSubscription
+  @auth(
+    query: {
+      or: [
+        { rule: "{$IS_ADMIN: { eq: \"true\" }}" }
+        {
+          rule: "query ($username: String!) { queryComment { onTicket { onColumn { inProject { admin(filter: {username: {eq: $username}}) { username } } } } } }"
+        }
+        {
+          rule: "query ($username: String!) { queryComment { onTicket { onColumn { inProject { roles { assignedTo(filter: {username: {eq: $username}}) { username } } } } } } }"
+        }
+      ]
+    }
+  ) {
   id: ID!
+  datetime: DateTime! @search
+  text: String!
   onTicket: Ticket
   author: User!
 }

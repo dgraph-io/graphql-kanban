@@ -4,7 +4,7 @@ import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 export type UserNamesFragment = (
   { __typename?: 'User' }
-  & Pick<Types.User, 'username' | 'displayName'>
+  & Pick<Types.User, 'username' | 'displayName' | 'image'>
 );
 
 export type ProjectDetailsFragment = (
@@ -104,6 +104,7 @@ export const UserNamesFragmentDoc = gql`
     fragment userNames on User {
   username
   displayName
+  image
 }
     `;
 export const ProjectDetailsFragmentDoc = gql`
