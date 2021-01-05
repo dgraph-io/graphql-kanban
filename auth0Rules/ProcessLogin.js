@@ -7,6 +7,7 @@ function (user, context, callback) {
     getUser(username: $username) {
       username
       isAdmin
+      image
     }
   }`;
   const COUNT_USERS_AND_SEARCH = `query COUNT_USER_AND_SEARCH($username: String!) {
@@ -16,19 +17,36 @@ function (user, context, callback) {
     getUser(username: $username) {
       username
       isAdmin
+      image
     }
   }`;
-  const ADD_USER = `mutation ADD_USER($username: String! $displayName: String! $isAdmin: Boolean) {
+  const ADD_USER = `mutation ADD_USER($username: String! $displayName: String! $image: String $isAdmin: Boolean) {
     addUser(input:[{
       username: $username
       displayName: $displayName
       isAdmin: $isAdmin
+      image: $image
     }]) {
       user {
         username
         isAdmin
+        image
       }
     }
+  }`;
+  const UPDATE_USER = `mutation UPDATE_USER($username: String! $displayName: String $image: String) {
+    updateUser(input: {
+      filter: { usernmame: { eq: $username } }
+      set: {
+        displayName: $displayName
+        image: $image
+      }
+    }) {
+      user {
+        username
+      }
+    }
+
   }`;
 
   async function returnUser () {
@@ -64,6 +82,7 @@ function (user, context, callback) {
   }
 
   async function checkUser () {
+    console.log("checking user");
     try {
       const response = await request(API, COUNT_USERS_AND_SEARCH, {
         username: user.email
@@ -74,21 +93,31 @@ function (user, context, callback) {
       const getUser = (
         response && response.getUser
       ) ? response.getUser : { username: null, isAdmin: false };
-      const { username, isAdmin } = getUser;
+      const { username, isAdmin, displayName, image } = getUser;
 
       // if the user already exists do not add again
+      const authDisplayName = user.name || user.email.match(/^([^@]*)@/)[1];
       if (username === user.email) {
         console.log('User already exists:', username);
-        context.idToken[CLAIMS] = { username, isAdmin, IS_ADMIN: (typeof isAdmin === 'boolean') ? isAdmin.toString() : "false" };
+        context.idToken[CLAIMS] = { username, isAdmin, image: user.picture, IS_ADMIN: (typeof isAdmin === 'boolean') ? isAdmin.toString() : "false" };
         return callback(null, user, context);
+      // if the user already exists and either the displayName or picture/image is not the same, then update
+      } else if((authDisplayName && displayName!==authDisplayName) || (user.picture && image!==user.picture)) {
+        console.log('Updating existing user:', username);
+        const options = {
+          username: user.email
+        };
+        if (authDisplayName) options.displayName = authDisplayName;
+        if (user.picture) options.image = user.picture;
+        request(API, UPDATE_USER, options);
       }
 
       const userVariables = {
         username: user.email,
-        // users registered via email and password will not have a name attribute
-        displayName: user.name || user.email.match(/^([^@]*)@/)[1],
+        displayName: authDisplayName,
         // if this is the first user, make them an admin
-        isAdmin: (count<1)
+        isAdmin: (count<1),
+        image: user.picture
       };
       
       return createUser(userVariables);
