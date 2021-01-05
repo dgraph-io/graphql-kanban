@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import { Button, Input } from "semantic-ui-react";
+import { Column as ColumnT, Ticket as TicketT } from "../../types/graphql";
 import { NewTicket } from "./newTicket";
 import { Ticket } from "./ticket";
 import { useUpdateColumnNameMutation } from "./types/operations";
 
 interface ColumnProps {
-  column: any;
+  column: ColumnT;
   index: number;
 }
 
@@ -71,14 +72,9 @@ export function Column(props: ColumnProps) {
                   paddingRight: "5px",
                 }}
               >
-                {column.tickets.map(
-                  (
-                    ticket: { id: string | number | null | undefined },
-                    index: number
-                  ) => (
-                    <Ticket ticket={ticket} index={index} key={ticket.id} />
-                  )
-                )}
+                {column.tickets?.map(( ticket, index ) => (
+                  <Ticket ticket={ticket as TicketT} index={index} key={ticket?.id} />
+                ))}
                 {provided.placeholder}
                 <NewTicket
                   colID={column?.colID}
